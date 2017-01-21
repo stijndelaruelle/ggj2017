@@ -76,6 +76,7 @@ public class Character : MonoBehaviour
 
     private float m_LerpTimer = 0.0f;
     protected bool m_HasReachedDestination = false;
+    private bool m_WasOnScreen = false;
 
     //Events
     private Action<Character> m_RunAwayEvent;
@@ -137,7 +138,8 @@ public class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-        UpdateAnimation("idle");
+        if (m_SkeletonAnimation.AnimationName == "")
+            UpdateAnimation("idle");
     }
 
     protected virtual void Update()
@@ -212,11 +214,18 @@ public class Character : MonoBehaviour
         //Transform to viewportspace
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
 
-        if (viewportPos.x < -0.2f || viewportPos.x > 1.2f ||
-            viewportPos.y < -0.2f || viewportPos.y > 1.2f)
+        if (viewportPos.x < -0.1f || viewportPos.x > 1.1f ||
+            viewportPos.y < -0.1f || viewportPos.y > 1.1f)
         {
-            if (m_DestroyEvent != null)
-                m_DestroyEvent(this);
+            if (m_WasOnScreen == true)
+            {
+                if (m_DestroyEvent != null)
+                    m_DestroyEvent(this);
+            }
+        }
+        else
+        {
+            m_WasOnScreen = true;
         }
     }
 

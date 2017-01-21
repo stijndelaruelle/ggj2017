@@ -35,7 +35,7 @@ public class RandomCharacter : Character
 
         if (m_Gender == Gender.Female)
         {
-            transform.Rotate(0.0f, 0.0f, 180.0f);
+            transform.Rotate(0.0f, 0.0f, 10.0f);
         }
     }
 

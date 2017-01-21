@@ -5,14 +5,27 @@ using Sjabloon;
 
 public class CharacterManager : MonoBehaviour
 {
-    [SerializeField]
-    private Character m_RandomCharacterPrefab;
-
+    [Header("Spawn position")]
+    [Space(5)]
     [SerializeField]
     private List<Transform> m_SpawnLocations;
 
     [SerializeField]
     private float m_MaxOffset;
+
+    [Space(10)]
+    [Header("Spawn Ratio")]
+    [Space(5)]
+    [SerializeField]
+    private float m_MinSpawnRatio;
+
+    [SerializeField]
+    private float m_MaxSpawnRatio;
+
+    private float m_SpawnTimer = 0.0f;
+
+    [SerializeField]
+    private Character m_RandomCharacterPrefab;
 
     //Holds a reference for every single character in the scene
     [SerializeField]
@@ -22,9 +35,26 @@ public class CharacterManager : MonoBehaviour
         get { return m_Characters; }
     }
 
+    private void Awake()
+    {
+        m_SpawnTimer = m_MinSpawnRatio;
+    }
+
     private void Update()
     {
+        //Spawn a random character every second
+        m_SpawnTimer -= Time.deltaTime;
 
+        if (m_SpawnTimer <= 0.0f)
+        {
+            Character character = SpawnRandomCharacter();
+
+            character.MoveToPosition(new Vector3(character.GamePosition.x * -1.0f,
+                                                 character.transform.position.y,
+                                                 character.transform.position.z));
+
+            m_SpawnTimer = UnityEngine.Random.Range(m_MinSpawnRatio, m_MaxSpawnRatio);
+        }
     }
 
     public Character SpawnRandomCharacter()
@@ -34,20 +64,20 @@ public class CharacterManager : MonoBehaviour
 
         //Random position
         int rand = UnityEngine.Random.Range(0, m_SpawnLocations.Count);
-        Transform randTransform = m_SpawnLocations[rand];
+        Vector3 randSpawnPotion = new Vector3(m_SpawnLocations[rand].position.x,
+                                              m_SpawnLocations[rand].position.y,
+                                              m_SpawnLocations[rand].position.z);
 
         //Offset the main position
         float randOffset = UnityEngine.Random.Range(-m_MaxOffset, m_MaxOffset);
-        randTransform.position += new Vector3(randTransform.position.x,
-                                              randTransform.position.y + randOffset,
-                                              randTransform.position.z);
+        randSpawnPotion += new Vector3(0.0f, randOffset, 0.0f);
 
-        return SpawnRandomCharacterAtPosition(randTransform);
+        return SpawnRandomCharacterAtPosition(randSpawnPotion);
     }
 
-    public Character SpawnRandomCharacterAtPosition(Transform transform)
+    public Character SpawnRandomCharacterAtPosition(Vector3 position)
     {
-        Character character = GameObject.Instantiate(m_RandomCharacterPrefab, transform.position, Quaternion.identity);
+        Character character = GameObject.Instantiate(m_RandomCharacterPrefab, position, Quaternion.identity);
         character.DestroyEvent += OnCharacterDestroy;
 
         m_Characters.Add(character);
