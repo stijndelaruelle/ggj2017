@@ -15,15 +15,16 @@ public class CharacterManager : MonoBehaviour
     private float m_MaxOffset;
 
     //Holds a reference for every single character in the scene
+    [SerializeField]
     private List<Character> m_Characters;
     public List<Character> Characters
     {
         get { return m_Characters; }
     }
 
-    private void Awake()
+    private void Update()
     {
-        m_Characters = new List<Character>();
+
     }
 
     public Character SpawnRandomCharacter()
@@ -47,18 +48,18 @@ public class CharacterManager : MonoBehaviour
     public Character SpawnRandomCharacterAtPosition(Transform transform)
     {
         Character character = GameObject.Instantiate(m_RandomCharacterPrefab, transform.position, Quaternion.identity);
+        character.DestroyEvent += OnCharacterDestroy;
+
         m_Characters.Add(character);
 
         return character;
     }
 
-
-    public Character GetRandomCharacter()
+    private void OnCharacterDestroy(Character character)
     {
-        if (m_Characters.Count == 0)
-            return null;
+        character.DestroyEvent -= OnCharacterDestroy;
+        m_Characters.Remove(character);
 
-        int rand = UnityEngine.Random.Range(0, m_Characters.Count);
-        return (m_Characters[rand]);
+        GameObject.Destroy(character.gameObject);
     }
 }

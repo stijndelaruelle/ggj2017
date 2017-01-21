@@ -31,8 +31,10 @@ public class CachierCharacter : Character
         set { m_ChangeTicketEvent = value; }
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+
         ResetSellTimer();
 
         m_TicketsLeft = m_Tickets;
@@ -77,9 +79,15 @@ public class CachierCharacter : Character
             m_ChangeTicketEvent(m_TicketsLeft, m_Tickets);
     }
 
+    public void IncreaseSellTime(float time)
+    {
+        //Cheap fix 
+        m_SellTimer += time;
+    }
+
     protected override void ExecuteNegativeCommand()
     {
-        m_TextBalloon.text = "NEGATIVE";
+        base.ExecuteNegativeCommand();
         StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
     }
 

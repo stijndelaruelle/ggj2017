@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Spine.Unity;
 
 public enum Gender
 {
@@ -21,6 +22,9 @@ public class Character : MonoBehaviour
     {
         get { return m_Width; }
     }
+
+    [SerializeField]
+    protected float m_VisualWidth;
 
     [SerializeField]
     protected float m_Frequency = -1;
@@ -51,7 +55,7 @@ public class Character : MonoBehaviour
     }
 
     [SerializeField]
-    protected SpriteRenderer m_SpriteRenderer;
+    protected SkeletonAnimation m_SkeletonAnimation;
 
     //Movement (will later all be calculated according to the width
     [Space(10)]
@@ -73,18 +77,6 @@ public class Character : MonoBehaviour
     private float m_LerpTimer = 0.0f;
     protected bool m_HasReachedDestination = false;
 
-    //Textballoon feedback
-    [Space(10)]
-    [Header("Thinking balloon")]
-    [Space(5)]
-    [SerializeField]
-    protected Text m_TextBalloon;
-
-    [SerializeField]
-    private float m_TextBalloonActivateTime;
-    private float m_TextBalloonActivateTimer;
-    private float m_TextBalloonDecativateTimer;
-
     //Events
     private Action<Character> m_RunAwayEvent;
     public Action<Character> RunAwayEvent
@@ -93,24 +85,65 @@ public class Character : MonoBehaviour
         set { m_RunAwayEvent = value; }
     }
 
+    private Action<Character> m_DestroyEvent;
+    public Action<Character> DestroyEvent
+    {
+        get { return m_DestroyEvent; }
+        set { m_DestroyEvent = value; }
+    }
+
+    //Visual events (dave)
+    private Action m_NotHackedEvent;
+    public Action NotHackedEvent
+    {
+        get { return m_NotHackedEvent; }
+        set { m_NotHackedEvent = value; }
+    }
+
+    private Action m_HalfHackedEvent;
+    public Action HalfHackedEvent
+    {
+        get { return m_HalfHackedEvent; }
+        set { m_HalfHackedEvent = value; }
+    }
+
+    private Action m_FullHackedEvent;
+    public Action FullHackedEvent
+    {
+        get { return m_FullHackedEvent; }
+        set { m_FullHackedEvent = value; }
+    }
+
+    private Action m_PositiveBrainCommandEvent;
+    public Action PositiveBrainCommandEvent
+    {
+        get { return m_PositiveBrainCommandEvent; }
+        set { m_PositiveBrainCommandEvent = value; }
+    }
+
+    private Action m_NegativeBrainCommandEvent;
+    public Action NegativeBrainCommandEvent
+    {
+        get { return m_NegativeBrainCommandEvent; }
+        set { m_NegativeBrainCommandEvent = value; }
+    }
+
     protected virtual void Awake()
     {
         m_SpawnPosition = transform.position;
         m_TargetPosition = transform.position;
         m_LastPosition = m_TargetPosition;
+    }
 
-        m_TextBalloon.gameObject.SetActive(false);
+    protected virtual void Start()
+    {
+        UpdateAnimation("idle");
     }
 
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            ExecuteNegativeCommand();
-        }
-
         UpdateMovement();
-        UpdateTextBalloon();
+        CheckIfInFrame();
     }
 
     private void UpdateMovement()
@@ -129,40 +162,21 @@ public class Character : MonoBehaviour
             if (m_LerpTimer >= 1.0f)
             {
                 m_LastPosition = m_TargetPosition;
+                UpdateAnimation("idle");
             }
         }
     }
 
-    private void UpdateTextBalloon()
+    private void UpdateAnimation(string name)
     {
-        //Activate
-        if (m_TextBalloonActivateTimer > 0.0f)
-        {
-            m_TextBalloonActivateTimer -= Time.deltaTime;
+        m_SkeletonAnimation.AnimationName = name;
 
-            if (m_TextBalloonActivateTimer < 0.0f)
-            {
-                m_TextBalloon.gameObject.SetActive(true);
-            }
-        }
+        //Facing direction
+        Vector3 diff = m_TargetPosition - m_LastPosition;
+        float sign = Mathf.Sign(diff.x);
 
-        //Deactivate
-        if (m_TextBalloonDecativateTimer > 0.0f)
-        {
-            m_TextBalloonDecativateTimer -= Time.deltaTime;
-
-            //Change alpha
-            Color newAlphaColor = m_TextBalloon.color;
-            newAlphaColor.a = (m_TextBalloonDecativateTimer / m_TextBalloonActivateTime);
-            m_TextBalloon.color = newAlphaColor;
-
-            if (m_TextBalloonDecativateTimer < 0.0f)
-            {
-                m_TextBalloon.gameObject.SetActive(false);
-                m_TextBalloonActivateTimer = 0.0f;
-                m_TextBalloonDecativateTimer = 0.0f;
-            }
-        }
+        Vector3 scale = m_SkeletonAnimation.transform.localScale;
+        m_SkeletonAnimation.transform.localScale = new Vector3(sign * scale.x, scale.y, scale.z);
     }
 
     public void MoveToPositionSequentially(Vector3 position)
@@ -181,6 +195,8 @@ public class Character : MonoBehaviour
 
         float distance = (m_TargetPosition - m_LastPosition).magnitude;
         m_CurrentMoveSpeed = (m_MoveSpeed / distance);
+
+        UpdateAnimation("walk");
     }
 
     public void WarpToPosition(Vector3 position)
@@ -193,72 +209,18 @@ public class Character : MonoBehaviour
 
     private void CheckIfInFrame()
     {
+        //Transform to viewportspace
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
 
-    }
-
-    //Hacking feedback
-    public void HalfHacked()
-    {
-        m_TextBalloon.text = "Half hacked.";
-
-        if (m_TextBalloonActivateTimer == 0.0f)
-            m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
-
-        m_TextBalloonDecativateTimer = m_TextBalloonActivateTime;
-    }
-
-    public void FullyHacked()
-    {
-        m_TextBalloon.text = "Hacked!";
-
-        if (m_TextBalloonActivateTimer == 0.0f)
-            m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
-
-        m_TextBalloonDecativateTimer = m_TextBalloonActivateTime;
-    }
-
-    public void NotHacked()
-    {
-        m_TextBalloonActivateTimer = 0.0f;
-    }
-
-    //Brain commands
-    public void SendBrainCommand(bool leftBrain, bool rightBrain)
-    {
-        if (leftBrain == false && rightBrain == false)
-            return;
-
-        RandomizeFrequency();
-
-        //Negative commands
-        if ((m_UseLeftBrain != leftBrain) || (m_UseRightBrain != rightBrain))
+        if (viewportPos.x < -0.2f || viewportPos.x > 1.2f ||
+            viewportPos.y < -0.2f || viewportPos.y > 1.2f)
         {
-            ExecuteNegativeCommand();
-            return;
-        }
-
-        //Positive commands
-        if ((m_UseLeftBrain == leftBrain) || (m_UseRightBrain == rightBrain))
-        {
-            ExecutePositiveCommand();
-            return;
+            if (m_DestroyEvent != null)
+                m_DestroyEvent(this);
         }
     }
 
-    private void ExecutePositiveCommand()
-    {
-        m_TextBalloon.text = "POSITIVE";
-    }
-
-    protected virtual void ExecuteNegativeCommand()
-    {
-        m_TextBalloon.text = "NEGATIVE";
-
-        m_MoveSpeed *= 3.0f;
-        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
-    }
-
-    private IEnumerator MoveToPositionSequentiallyRoutine(Vector3 position)
+    protected IEnumerator MoveToPositionSequentiallyRoutine(Vector3 position)
     {
         //Jump in the air
 
@@ -285,32 +247,80 @@ public class Character : MonoBehaviour
         yield return null;
     }
 
+    //Hacking feedback
+    public void HalfHacked()
+    {
+        if (m_HalfHackedEvent != null)
+            m_HalfHackedEvent();
+    }
+
+    public void FullyHacked()
+    {
+        if (m_FullHackedEvent != null)
+            m_FullHackedEvent();
+    }
+
+    public void NotHacked()
+    {
+        if (m_NotHackedEvent != null)
+            m_NotHackedEvent();
+    }
+
+    //Brain commands
+    public void SendBrainCommand(bool leftBrain, bool rightBrain)
+    {
+        if (leftBrain == false && rightBrain == false)
+            return;
+
+        RandomizeFrequency();
+
+        //Negative commands
+        if ((m_UseLeftBrain != leftBrain) || (m_UseRightBrain != rightBrain))
+        {
+            ExecuteNegativeCommand();
+            return;
+        }
+
+        //Positive commands
+        if ((m_UseLeftBrain == leftBrain) || (m_UseRightBrain == rightBrain))
+        {
+            ExecutePositiveCommand();
+            return;
+        }
+    }
+
+    protected virtual void ExecutePositiveCommand()
+    {
+        if (m_PositiveBrainCommandEvent != null)
+            m_PositiveBrainCommandEvent();
+    }
+
+    protected virtual void ExecuteNegativeCommand()
+    {
+        if (m_NegativeBrainCommandEvent != null)
+            m_NegativeBrainCommandEvent();
+    }
 
     //Randomize
     protected void RandomizeFrequency()
     {
         //Frequency is dependant on the width
         //Big characters have a lower range than thin characters
-
         m_Frequency = UnityEngine.Random.Range(0.05f, 1.0f);
 
-        //Amplitude is dependant on the gender
-        float minRadius = 0.05f;
-        float maxRange = 0.95f;
-
+        //Amplitude is dependent on the gender
         switch (m_Gender)
         {
             case Gender.Male:
-
+                m_Amplitude = UnityEngine.Random.Range(0.05f, 0.49f);
                 break;
 
             case Gender.Female:
+                m_Amplitude = UnityEngine.Random.Range(0.51f, 0.95f);
                 break;
 
             default:
                 break;
         }
-
-        m_Amplitude = UnityEngine.Random.Range(0.05f, 1.0f);
     }
 }

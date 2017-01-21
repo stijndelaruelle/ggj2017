@@ -142,6 +142,9 @@ public class Queue : MonoBehaviour
     private void OnCharacterRunAway(Character character)
     {
         Remove(character);
+
+        //Cheap fix
+        m_Cachier.IncreaseSellTime(5.0f);
     }
 
     private void OnChangeTickets(int tickets, int maxTickets)
@@ -167,7 +170,7 @@ public class Queue : MonoBehaviour
         }
     }
 
-    //Sequential movement (looks nicer
+    //Sequential movement (looks nicer)
     private IEnumerator RemoveMovementSequentailly(int position, Character oldCharacter)
     {
         //All characters have to move forwards (with the width of the old character)
