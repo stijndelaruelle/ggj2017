@@ -43,6 +43,10 @@ public class BrainwaveDevice : MonoBehaviour
 
     private Character m_Target;
 
+    //Prev input (fixes hold exploit)
+    private float m_PrevBrainPowerLeft = 0.0f;
+    private float m_PrevBrainPowerRight = 0.0f;
+
     //When the device get's hacked
     private bool m_InversedControls;
     public bool InversedControls
@@ -267,15 +271,18 @@ public class BrainwaveDevice : MonoBehaviour
 
     private void UpdateCommand()
     {
-        if (m_Target == null)
-            return;
-
         //Gather input
+        m_PrevBrainPowerLeft = m_BrainPowerLeft;
+        m_PrevBrainPowerRight = m_BrainPowerRight;
+
         m_BrainPowerLeft = m_InputManager.GetAxis("BrainPowerLeft_" + m_DeviceID);
         m_BrainPowerRight = m_InputManager.GetAxis("BrainPowerRight_" + m_DeviceID);
 
-        bool useLeftBrainPower = (m_BrainPowerLeft >= 1.0f);
-        bool useRightBrainPower = (m_BrainPowerRight >= 1.0f);
+        if (m_Target == null)
+            return;
+
+        bool useLeftBrainPower = (m_BrainPowerLeft >= 1.0f && (m_BrainPowerLeft != m_PrevBrainPowerLeft));
+        bool useRightBrainPower = (m_BrainPowerRight >= 1.0f && (m_BrainPowerRight != m_PrevBrainPowerRight));
 
         if (useLeftBrainPower == true || useRightBrainPower == true)
         {
