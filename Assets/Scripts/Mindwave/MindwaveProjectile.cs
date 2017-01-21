@@ -50,17 +50,17 @@ public class MindwaveProjectile : MonoBehaviour {
         TravelTimer += Time.deltaTime;
         float travelPercentage = TravelTimer/TravelTime;
         if(FollowObject) TargetPos = TargetTransform.transform.position;
-        Vector3 pos = (TargetPos - StartPos) * travelPercentage;
+        Vector3 pos = (TargetPos - StartPos) * travelPercentage + StartPos;
         //float distance = Vector3.Distance(pos, transform.position);
 
 
-        if(travelPercentage<0.15f) {
+        if(travelPercentage<0.05f) {
             //phase one
             //upwards move + move towards target
             //15%
-            pos.y +=  Phase2height * (travelPercentage/0.15f);
+            pos.y +=  Phase2height * (travelPercentage/0.05f);
 
-        }else if(travelPercentage>=0.15f && travelPercentage<0.85f) {
+        }else if(travelPercentage>=0.05f && travelPercentage<0.95f) {
             //phase two
             //sine waving at height
             //60%
@@ -72,7 +72,7 @@ public class MindwaveProjectile : MonoBehaviour {
             //phase three
             //move downwards + toward target
             //15%
-            pos.y +=  Phase2height-Phase2height * ((travelPercentage-0.85f)/0.15f)+TargetHeightOffset; 
+            pos.y +=  Phase2height-Phase2height * ((travelPercentage-0.95f)/0.05f)+TargetHeightOffset; 
 
         }
 

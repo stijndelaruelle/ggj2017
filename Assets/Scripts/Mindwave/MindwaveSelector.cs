@@ -21,6 +21,7 @@ public class MindwaveSelector : MonoBehaviour {
     [SerializeField] bool FollowObj = true;
 
     [SerializeField] BrainwaveDevice connectedDevice;
+    [SerializeField] GameObject NoTargetTarget;
 
     bool Emitting = false;
 
@@ -39,16 +40,21 @@ public class MindwaveSelector : MonoBehaviour {
         
         connectedDevice.UpdateValuesEvent+=UpdateValues;
         connectedDevice.UpdateTargetEvent+=SetTarget;
+        Target.transform.position = NoTargetTarget.transform.position;
 
     }
 
     public void SetTarget(Character target) {
-         Emitting = target!=null;
-        if(!Emitting) {
-            return;
-        }
-        Debug.Log("Set target that's not null");
-        Target.transform.position = target.transform.position;
+        
+        //Emitting = target!=null;
+        //if(!Emitting) {
+        //    return;
+        //}
+        Emitting = true;
+       if(target==null)
+         Target.transform.position = NoTargetTarget.transform.position;
+        else
+          Target.transform.position = target.transform.position;
     }
 
     public void UpdateValues(float frequency, float amplitude){
