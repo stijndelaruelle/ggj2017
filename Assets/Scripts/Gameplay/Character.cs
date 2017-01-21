@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public enum Gender
 {
-    Undefined,
     Male,
     Female
 }
@@ -59,6 +58,9 @@ public class Character : MonoBehaviour
         get { return m_UseRightBrain; }
     }
 
+    [SerializeField]
+    private SpriteRenderer m_SpriteRenderer;
+
     //Movement (will later all be calculated according to the width
     [Space(10)]
     [Header("Movement")]
@@ -109,7 +111,7 @@ public class Character : MonoBehaviour
 
         if (m_RandomizeCharacteristics)
         {
-            RandomizeFrequency();
+            RandomizeCharacter();
         }
     }
 
@@ -161,6 +163,11 @@ public class Character : MonoBehaviour
         if (m_TextBalloonDecativateTimer > 0.0f)
         {
             m_TextBalloonDecativateTimer -= Time.deltaTime;
+
+            //Change alpha
+            Color newAlphaColor = m_TextBalloon.color;
+            newAlphaColor.a = (m_TextBalloonDecativateTimer / m_TextBalloonActivateTime);
+            m_TextBalloon.color = newAlphaColor;
 
             if (m_TextBalloonDecativateTimer < 0.0f)
             {
@@ -279,6 +286,42 @@ public class Character : MonoBehaviour
         MoveToPosition(newPosition);
 
         yield return null;
+    }
+
+
+    //Randomize
+    private void RandomizeCharacter()
+    {
+        RandomizeGender();
+        RandomizeWidth();
+        RandomizeFrequency();
+    }
+
+    private void RandomizeGender()
+    {
+        //Random gender
+        m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
+
+        switch (m_Gender)
+        {
+            case Gender.Male:
+                m_SpriteRenderer.color = Color.blue;
+                break;
+
+            case Gender.Female:
+                m_SpriteRenderer.color = Color.red;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void RandomizeWidth()
+    {
+        //Random width
+        m_Width = UnityEngine.Random.Range(0.5f, 2.0f);
+        m_SpriteRenderer.transform.localScale = new Vector3(m_Width, 1.0f, 1.0f);
     }
 
     private void RandomizeFrequency()

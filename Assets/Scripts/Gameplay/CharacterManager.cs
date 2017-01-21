@@ -31,7 +31,7 @@ public class CharacterManager : MonoBehaviour
             return null;
 
         //Random position
-        int rand = UnityEngine.Random.Range(0, m_SpawnLocations.Count - 1);
+        int rand = UnityEngine.Random.Range(0, m_SpawnLocations.Count);
         Transform randTransform = m_SpawnLocations[rand];
 
         //Offset the main position
@@ -56,7 +56,7 @@ public class CharacterManager : MonoBehaviour
         if (m_Characters.Count == 0)
             return null;
 
-        int rand = UnityEngine.Random.Range(0, m_Characters.Count - 1);
+        int rand = UnityEngine.Random.Range(0, m_Characters.Count);
         return (m_Characters[rand]);
     }
 }

@@ -5,13 +5,25 @@ using UnityEngine;
 public class Queue : MonoBehaviour
 {
     [SerializeField]
-    private CharacterManager m_CharacterManager;
-
-    [SerializeField]
-    private List<Character> m_Characters;
+    private int m_NumberOfCharacters;
 
     [SerializeField]
     private Transform m_SpawnLocation;
+
+    [SerializeField]
+    private CharacterManager m_CharacterManager;
+    private List<Character> m_Characters;
+
+    private void Start()
+    {
+        m_Characters = new List<Character>();
+
+        for (int i = 0; i < m_NumberOfCharacters; ++i)
+        {
+            Character character = m_CharacterManager.SpawnCharacter(m_SpawnLocation);
+            if (character != null) { Insert(m_Characters.Count, character, true); }
+        }
+    }
 
     private void OnDestroy()
     {
@@ -26,14 +38,6 @@ public class Queue : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            //Spawn a new random character
-            Character character = m_CharacterManager.SpawnCharacter(m_SpawnLocation);
-            if (character != null)
-                Insert(m_Characters.Count, character);
-        }
-
         if (Input.GetKeyDown(KeyCode.Z))
         {
             //Spawn a new random character
@@ -65,7 +69,7 @@ public class Queue : MonoBehaviour
         }
     }
 
-    private void Insert(int position, Character character)
+    private void Insert(int position, Character character, bool warp = false)
     {
         //If we insert the character at the back
         if (position >= m_Characters.Count)
@@ -78,7 +82,9 @@ public class Queue : MonoBehaviour
                 targetPosition.x -= (character.Width * 0.5f);
             }
 
-            character.MoveToPosition(targetPosition);
+            if (warp) { character.WarpToPosition(targetPosition); }
+            else      { character.MoveToPosition(targetPosition); }
+
             m_Characters.Add(character);
         }
 
