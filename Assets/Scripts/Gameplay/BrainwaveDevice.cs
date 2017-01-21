@@ -258,6 +258,11 @@ public class BrainwaveDevice : MonoBehaviour
 
         foreach (Character character in characters)
         {
+            if (character.gameObject == this.gameObject)
+            {
+                continue;
+            }
+
             //Compare frequency
             bool frequencyHacked = false;
             if (character.Frequency > (m_Frequency - m_ErrorMargin) &&
