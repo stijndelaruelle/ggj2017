@@ -182,10 +182,14 @@ public class Queue : MonoBehaviour
 
     private void OnCharacterRunAway(Character character)
     {
+        //Cheap fix
+        if (m_Characters[0] == character)
+        {
+            m_Cachier.ResetSellTimer();
+        }
+
         Remove(character);
 
-        //Cheap fix
-        m_Cachier.IncreaseSellTime(5.0f);
         //The player is buying a ticket, he wins!
         if (m_Characters[0] == m_Player)
         {
