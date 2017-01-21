@@ -8,7 +8,9 @@ public class TextBalloon : MonoBehaviour
     [SerializeField]
     protected Character m_Character;
 
-    [SerializeField]
+	[SerializeField]
+	protected GameObject m_TextPanel;
+
     protected Text m_Text;
 
     [SerializeField]
@@ -16,9 +18,15 @@ public class TextBalloon : MonoBehaviour
     private float m_TextBalloonActivateTimer;
     private float m_TextBalloonDecativateTimer;
 
+	private Tweet m_CharacterTweet;
+
     private void Awake()
     {
-        m_Text.gameObject.SetActive(false);
+		m_Text = GetComponentInChildren<Text>();
+		if (m_Text == null)
+			Debug.LogWarning("No text component found!", this);
+
+		m_TextPanel.SetActive(false);
     }
 
     private void Start()
@@ -47,7 +55,7 @@ public class TextBalloon : MonoBehaviour
 
             if (m_TextBalloonActivateTimer < 0.0f)
             {
-                m_Text.gameObject.SetActive(true);
+				 m_TextPanel.SetActive(true);
             }
         }
 
@@ -63,7 +71,7 @@ public class TextBalloon : MonoBehaviour
 
             if (m_TextBalloonDecativateTimer < 0.0f)
             {
-                m_Text.gameObject.SetActive(false);
+				m_TextPanel.SetActive(false);
                 m_TextBalloonActivateTimer = 0.0f;
                 m_TextBalloonDecativateTimer = 0.0f;
             }
@@ -76,7 +84,11 @@ public class TextBalloon : MonoBehaviour
         if (m_Text == null)
             return;
 
-        m_Text.text = "Half.";
+		if(m_CharacterTweet == null)
+			m_CharacterTweet = Twitter.Instance.GetRandomHashTag().GetRandomTweet();
+
+        m_Text.text = m_CharacterTweet.ScrambledContents;
+
 
         if (m_TextBalloonActivateTimer == 0.0f)
             m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
@@ -89,7 +101,7 @@ public class TextBalloon : MonoBehaviour
         if (m_Text == null)
             return;
 
-        m_Text.text = "Hacked!";
+        m_Text.text = m_CharacterTweet.Contents;
 
         if (m_TextBalloonActivateTimer == 0.0f)
             m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
