@@ -89,6 +89,7 @@ public class Character : MonoBehaviour
     private bool m_WasOnScreen = false;
 
     private float m_OriginalScale = 1.0f;
+    protected bool m_IsCheering = false;
 
     //Events
     private Action<Character> m_RunAwayEvent;
@@ -199,6 +200,14 @@ public class Character : MonoBehaviour
             return;
         }
 
+        if (m_IsCheering == true)
+        {
+            if (m_SkeletonAnimation.AnimationName != "cheer")
+                m_SkeletonAnimation.AnimationName = "cheer";
+
+            return;
+        }
+
         if (m_SkeletonAnimation.AnimationName == null || m_SkeletonAnimation.AnimationName != "idle")
         {
             m_SkeletonAnimation.AnimationName = "idle";
@@ -292,6 +301,21 @@ public class Character : MonoBehaviour
         MoveToPosition(newPosition);
 
         yield return null;
+    }
+
+    //Buying feedback
+    public void BuyTicket(Vector3 position)
+    {
+        StartCoroutine(BuyTicketRoutine(position));
+    }
+
+    private IEnumerator BuyTicketRoutine(Vector3 position)
+    {
+        m_IsCheering = true;
+        yield return new WaitForSeconds(1.0f);
+        m_IsCheering = false;
+
+        MoveToPositionSequentially(position);
     }
 
     //Hacking feedback

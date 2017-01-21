@@ -220,11 +220,8 @@ public class Queue : MonoBehaviour
         if (m_Characters == null || m_Characters.Count == 0)
             return;
 
-        m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
-
-        //if (m_Characters.Count < 1)
-         //   return;
-
+        m_Characters[0].BuyTicket(m_EndPosition.position);
+        //m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
     }
 
     private void GameWin()
