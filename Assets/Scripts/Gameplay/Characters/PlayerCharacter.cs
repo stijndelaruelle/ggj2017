@@ -9,10 +9,9 @@ public class PlayerCharacter : Character
 
     protected override void ExecuteNegativeCommand()
     {
-        m_TextBalloon.text = "NEGATIVE";
-        //StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
+        base.ExecuteNegativeCommand();
 
-        //Change a random thing
+        //Change a random inut setting
         int rand = UnityEngine.Random.Range(0, 100);
         if (rand > 50)
         {

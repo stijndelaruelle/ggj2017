@@ -48,6 +48,14 @@ public class RandomCharacter : Character
         //}
     }
 
+    protected override void ExecuteNegativeCommand()
+    {
+        base.ExecuteNegativeCommand();
+
+        m_MoveSpeed *= 3.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
+    }
+
     private void RandomizeWidth()
     {
         //Random width
