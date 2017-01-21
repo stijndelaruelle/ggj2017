@@ -26,6 +26,9 @@ public class TextBalloon : MonoBehaviour
 		if (m_Text == null)
 			Debug.LogWarning("No text component found!", this);
 
+		if(m_TextPanel == null)
+			Debug.LogWarning("No text panel set!", this);
+
 		m_TextPanel.SetActive(false);
     }
 
