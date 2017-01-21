@@ -279,7 +279,6 @@ public class BrainwaveDevice : MonoBehaviour
             {
                 character.FullyHacked();
                 m_Target = character;
-                return;
             }
 
             //Almost there, give feedback!
