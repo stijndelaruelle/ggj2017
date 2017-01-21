@@ -4,11 +4,23 @@ using UnityEngine;
 
 public class Queue : MonoBehaviour
 {
+    [Header("Queue properties")]
+    [Space(5)]
     [SerializeField]
     private int m_NumberOfCharacters;
 
+    [Space(10)]
+    [Header("Required references")]
+    [Space(5)]
     [SerializeField]
-    private Transform m_SpawnLocation;
+    private Transform m_StartPosition;
+
+    [SerializeField]
+    private Transform m_EndPosition;
+
+    [SerializeField]
+    private Transform m_CachierPosition;
+    private CachierCharacter m_Cachier;
 
     [SerializeField]
     private CharacterManager m_CharacterManager;
@@ -18,54 +30,32 @@ public class Queue : MonoBehaviour
     {
         m_Characters = new List<Character>();
 
+        //Spawn characters
         for (int i = 0; i < m_NumberOfCharacters; ++i)
         {
-            Character character = m_CharacterManager.SpawnCharacter(m_SpawnLocation);
+            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition);
             if (character != null) { Insert(m_Characters.Count, character, true); }
         }
+
+        //Spawn cachier
+        m_Cachier = m_CharacterManager.SpawnCachier(m_EndPosition);
+        m_Cachier.WarpToPosition(m_CachierPosition.position);
+        m_Cachier.SellTicketEvent += OnSellTicket;
     }
 
     private void OnDestroy()
     {
-        if (m_Characters == null)
-            return;
-
-        foreach (Character character in m_Characters)
+        if (m_Characters != null)
         {
-            character.RunAwayEvent -= OnCharacterRunAway;
-        }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            //Spawn a new random character
-            Character character = m_CharacterManager.SpawnCharacter(m_SpawnLocation);
-            if (character != null)
-                Insert(0, character);
+            foreach (Character character in m_Characters)
+            {
+                character.RunAwayEvent -= OnCharacterRunAway;
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (m_Cachier != null)
         {
-            Character character = m_CharacterManager.SpawnCharacter(m_SpawnLocation);
-            if (character != null)
-                Insert((int)(m_Characters.Count * 0.5f), character);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Remove(m_Characters.Count - 1);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Remove(0);
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            Remove((int)(m_Characters.Count * 0.5f));
+            m_Cachier.SellTicketEvent -= OnSellTicket;
         }
     }
 
@@ -129,27 +119,39 @@ public class Queue : MonoBehaviour
         if (position >= m_Characters.Count)
             position = m_Characters.Count - 1;
 
-        //Get the current character at this position
-        Character oldCharacter = m_Characters[position];
-
-        //All characters have to move forwards (with the width of the old character)
-        for (int i = position + 1; i < m_Characters.Count; ++i)
-        {
-            Vector3 targetPosition = m_Characters[i].GamePosition;
-            targetPosition.x += oldCharacter.Width;
-
-            m_Characters[i].MoveToPosition(targetPosition);
-        }
-
         //Stop listening to his events
-        m_Characters[position].RunAwayEvent -= OnCharacterRunAway;
+        Character oldCharacter = m_Characters[position];
+        oldCharacter.RunAwayEvent -= OnCharacterRunAway;
 
         //All characters behind this character move forward with the width
         m_Characters.RemoveAt(position);
+
+        StartCoroutine(RemoveMovementSequentailly(position, oldCharacter));
     }
 
     private void OnCharacterRunAway(Character character)
     {
         Remove(character);
+    }
+
+    private void OnSellTicket()
+    {
+        m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
+    }
+
+    //Sequential movement (looks nicer
+    private IEnumerator RemoveMovementSequentailly(int position, Character oldCharacter)
+    {
+        //All characters have to move forwards (with the width of the old character)
+        for (int i = position; i < m_Characters.Count; ++i)
+        {
+            Vector3 targetPosition = m_Characters[i].GamePosition;
+            targetPosition.x += oldCharacter.Width;
+
+            m_Characters[i].MoveToPosition(targetPosition);
+
+            float randTime = UnityEngine.Random.Range(0.1f, 0.5f);
+            yield return new WaitForSeconds(randTime);
+        }
     }
 }

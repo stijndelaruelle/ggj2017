@@ -13,15 +13,33 @@ public class MindwaveSelector : MonoBehaviour {
     [SerializeField] float EmitInterval = 1;
     [SerializeField] float ProjectilePhase2Height = 5;
     [SerializeField] float Frequency = 1;
+                     float BaseFrequency = 1;
     [SerializeField] float Amplitude = 1;
+                     float BaseAmplitude = 1;
     [SerializeField] bool DistanceBasedFrequency = true;
     [SerializeField] bool FollowObj = true;
 
 
     float EmitIntervalTimer = 0;
 
+    private void Awake()
+    {
+        BaseFrequency = Frequency;
+        BaseAmplitude = Amplitude;
+    }
+
     public void SetTarget(Transform target) {
         Target.transform.position = target.position;
+    }
+
+    public void SetFrequency(float frequency)
+    {
+        Frequency = frequency * BaseFrequency;
+    }
+
+    public void SetAmplitude(float amplitude)
+    {
+        Amplitude = amplitude * BaseAmplitude;
     }
 
     void Update() {

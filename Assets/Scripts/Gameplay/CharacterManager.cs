@@ -5,7 +5,10 @@ using UnityEngine;
 public class CharacterManager : MonoBehaviour
 {
     [SerializeField]
-    private Character m_CharacterPrefab;
+    private Character m_CachierPrefab;
+
+    [SerializeField]
+    private Character m_RandomCharacterPrefab;
 
     [SerializeField]
     private List<Transform> m_SpawnLocations;
@@ -25,6 +28,14 @@ public class CharacterManager : MonoBehaviour
         m_Characters = new List<Character>();
     }
 
+    public CachierCharacter SpawnCachier(Transform transform)
+    {
+        CachierCharacter character = GameObject.Instantiate(m_CachierPrefab, transform.position, Quaternion.identity) as CachierCharacter;
+        m_Characters.Add(character);
+
+        return character;
+    }
+
     public Character SpawnRandomCharacter()
     {
         if (m_SpawnLocations.Count == 0)
@@ -40,12 +51,12 @@ public class CharacterManager : MonoBehaviour
                                               randTransform.position.y + randOffset,
                                               randTransform.position.z);
 
-        return SpawnCharacter(randTransform);
+        return SpawnRandomCharacterAtPosition(randTransform);
     }
 
-    public Character SpawnCharacter(Transform transform)
+    public Character SpawnRandomCharacterAtPosition(Transform transform)
     {
-        Character character = GameObject.Instantiate(m_CharacterPrefab, transform.position, Quaternion.identity);
+        Character character = GameObject.Instantiate(m_RandomCharacterPrefab, transform.position, Quaternion.identity);
         m_Characters.Add(character);
 
         return character;

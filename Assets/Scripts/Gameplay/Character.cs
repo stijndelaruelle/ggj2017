@@ -12,54 +12,46 @@ public enum Gender
 
 public class Character : MonoBehaviour
 {
-    [Header("Random properties")]
-    [Space(5)]
+    [SerializeField]
+    protected Gender m_Gender;
 
     [SerializeField]
-    [Tooltip("Disable for debugging")]
-    private bool m_RandomizeCharacteristics;
-    [Space(10)]
-
-    [SerializeField]
-    private Gender m_Gender;
-
-    [SerializeField]
-    private float m_Width;
+    protected float m_Width;
     public float Width
     {
         get { return m_Width; }
     }
 
     [SerializeField]
-    private float m_Frequency;
+    protected float m_Frequency;
     public float Frequency
     {
         get { return m_Frequency; }
     }
 
     [SerializeField]
-    private float m_Amplitude;
+    protected float m_Amplitude;
     public float Amplitude
     {
         get { return m_Amplitude; }
     }
 
     [SerializeField]
-    private bool m_UseLeftBrain;
+    protected bool m_UseLeftBrain;
     public bool UseLeftBrain
     {
         get { return m_UseLeftBrain; }
     }
 
     [SerializeField]
-    private bool m_UseRightBrain;
+    protected bool m_UseRightBrain;
     public bool UseRightBrain
     {
         get { return m_UseRightBrain; }
     }
 
     [SerializeField]
-    private SpriteRenderer m_SpriteRenderer;
+    protected SpriteRenderer m_SpriteRenderer;
 
     //Movement (will later all be calculated according to the width
     [Space(10)]
@@ -67,26 +59,26 @@ public class Character : MonoBehaviour
     [Space(5)]
     [Tooltip ("Seconds per unit")]
     [SerializeField]
-    private float m_MoveSpeed = 1.0f;
+    protected float m_MoveSpeed = 1.0f;
     private float m_CurrentMoveSpeed; //caches distance calculations
 
-    private Vector3 m_SpawnPosition;
-    private Vector3 m_LastPosition;
-    private Vector3 m_TargetPosition;
+    protected Vector3 m_SpawnPosition;
+    protected Vector3 m_LastPosition;
+    protected Vector3 m_TargetPosition;
     public Vector3 GamePosition
     {
         get { return m_TargetPosition; }
     }
 
     private float m_LerpTimer = 0.0f;
-    private bool m_HasReachedDestination = false;
+    protected bool m_HasReachedDestination = false;
 
     //Textballoon feedback
     [Space(10)]
     [Header("Thinking balloon")]
     [Space(5)]
     [SerializeField]
-    private Text m_TextBalloon;
+    protected Text m_TextBalloon;
 
     [SerializeField]
     private float m_TextBalloonActivateTime;
@@ -101,21 +93,16 @@ public class Character : MonoBehaviour
         set { m_RunAwayEvent = value; }
     }
 
-    private void Awake()
+    protected virtual void Awake()
     {
         m_SpawnPosition = transform.position;
         m_TargetPosition = transform.position;
         m_LastPosition = m_TargetPosition;
 
         m_TextBalloon.gameObject.SetActive(false);
-
-        if (m_RandomizeCharacteristics)
-        {
-            RandomizeCharacter();
-        }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -178,6 +165,12 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void MoveToPositionSequentially(Vector3 position)
+    {
+        m_MoveSpeed *= 2.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(position));
+    }
+
     public void MoveToPosition(Vector3 position)
     {
         m_HasReachedDestination = false;
@@ -224,6 +217,11 @@ public class Character : MonoBehaviour
         m_TextBalloonDecativateTimer = m_TextBalloonActivateTime;
     }
 
+    public void NotHacked()
+    {
+        m_TextBalloonActivateTimer = 0.0f;
+    }
+
     //Brain commands
     public void SendBrainCommand(bool leftBrain, bool rightBrain)
     {
@@ -252,21 +250,20 @@ public class Character : MonoBehaviour
         m_TextBalloon.text = "POSITIVE";
     }
 
-    private void ExecuteNegativeCommand()
+    protected virtual void ExecuteNegativeCommand()
     {
         m_TextBalloon.text = "NEGATIVE";
-        StartCoroutine(RunAwayRoutine());
+
+        m_MoveSpeed *= 3.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
-    private IEnumerator RunAwayRoutine()
+    private IEnumerator MoveToPositionSequentiallyRoutine(Vector3 position)
     {
         //Jump in the air
 
-        //Double dash!
-        m_MoveSpeed *= 2.0f;
-
         //Move to the correct Y position
-        Vector3 newPosition = new Vector3(transform.position.x, m_SpawnPosition.y, transform.position.z);
+        Vector3 newPosition = new Vector3(transform.position.x, position.y, transform.position.z);
         MoveToPosition(newPosition);
 
         while (m_HasReachedDestination == false)
@@ -281,7 +278,7 @@ public class Character : MonoBehaviour
             m_RunAwayEvent(this);
 
         //Run towards where we came from
-        newPosition = m_SpawnPosition;
+        newPosition = position;
 
         MoveToPosition(newPosition);
 
@@ -290,43 +287,9 @@ public class Character : MonoBehaviour
 
 
     //Randomize
-    private void RandomizeCharacter()
+    protected void RandomizeFrequency()
     {
-        RandomizeGender();
-        RandomizeWidth();
-        RandomizeFrequency();
-    }
-
-    private void RandomizeGender()
-    {
-        //Random gender
-        m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
-
-        switch (m_Gender)
-        {
-            case Gender.Male:
-                m_SpriteRenderer.color = Color.blue;
-                break;
-
-            case Gender.Female:
-                m_SpriteRenderer.color = Color.red;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private void RandomizeWidth()
-    {
-        //Random width
-        m_Width = UnityEngine.Random.Range(0.5f, 2.0f);
-        m_SpriteRenderer.transform.localScale = new Vector3(m_Width, 1.0f, 1.0f);
-    }
-
-    private void RandomizeFrequency()
-    {
-        m_Frequency = UnityEngine.Random.Range(0.0f, 1.0f);
-        m_Amplitude = UnityEngine.Random.Range(0.0f, 1.0f);
+        m_Frequency = UnityEngine.Random.Range(0.05f, 1.0f);
+        m_Amplitude = UnityEngine.Random.Range(0.05f, 1.0f);
     }
 }

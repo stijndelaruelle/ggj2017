@@ -17,18 +17,13 @@ public class BrainwaveDevice : MonoBehaviour
     [SerializeField]
     private float m_ErrorMargin;
 
+    [SerializeField]
+    private MindwaveSelector m_Visuals;
+
     private float m_Frequency;
-    public float Frequency
-    {
-        get { return m_Frequency; }
-    }
     private float m_PreviousFrequencyAngle;
 
     private float m_Amplitude;
-    public float Amplitude
-    {
-        get { return m_Amplitude; }
-    }
     private float m_PreviousAmplitudeAngle;
 
     private float m_BrainPowerLeft;
@@ -69,9 +64,40 @@ public class BrainwaveDevice : MonoBehaviour
 
         UpdateHacking();
         UpdateCommand();
+
+        UpdateVisuals();
     }
 
     private void UpdateFrequency()
+    {
+        //Gather input
+        float newFrequencyX = m_InputManager.GetAxis("Frequency_X_" + m_DeviceID);
+        float newFrequencyY = m_InputManager.GetAxis("Frequency_Y_" + m_DeviceID);
+
+        Vector2 newFrequencyVector = new Vector2(newFrequencyX, newFrequencyY);
+        float distance = newFrequencyVector.magnitude;
+
+        if (distance < 0.5f)
+        {
+            m_Frequency = 0.0f;
+            return;
+        }
+
+        newFrequencyVector.Normalize();
+
+        float angle = Mathf.Atan2(newFrequencyVector.y, newFrequencyVector.x) * Mathf.Rad2Deg;
+        angle += 90.0f;
+
+        if (angle < 0.0f)   { angle += 360.0f; }
+        if (angle > 360.0f) { angle -= 360.0f; }
+
+        //Invert
+        angle = 360.0f - angle;
+
+        m_Frequency = angle / 360.0f;
+    }
+
+    private void UpdateFrequencyTurning()
     {
         //Gather input
         float newFrequencyX = m_InputManager.GetAxis("Frequency_X_" + m_DeviceID);
@@ -115,6 +141,36 @@ public class BrainwaveDevice : MonoBehaviour
         if (distance < 0.5f)
         {
             m_Amplitude = 0.0f;
+            return;
+        }
+
+        newAmplitudeVector.Normalize();
+
+        float angle = Mathf.Atan2(newAmplitudeVector.y, newAmplitudeVector.x) * Mathf.Rad2Deg;
+        angle += 90.0f;
+
+        if (angle < 0.0f) { angle += 360.0f; }
+        if (angle > 360.0f) { angle -= 360.0f; }
+        
+        //Invert
+        angle = 360.0f - angle;
+
+        m_Amplitude = angle / 360.0f;
+    }
+
+    private void UpdateAmplitudeTurning()
+    {
+        //Gather input
+        float newAmplitudeX = m_InputManager.GetAxis("Amplitude_X_" + m_DeviceID);
+        float newAmplitudeY = m_InputManager.GetAxis("Amplitude_Y_" + m_DeviceID);
+
+        Vector2 newAmplitudeVector = new Vector2(newAmplitudeX, newAmplitudeY);
+        float distance = newAmplitudeVector.magnitude;
+
+        if (distance < 0.5f)
+        {
+            m_Amplitude = 0.0f;
+            return;
         }
 
         newAmplitudeVector.Normalize();
@@ -173,6 +229,11 @@ public class BrainwaveDevice : MonoBehaviour
             {
                 character.HalfHacked();
             }
+
+            else
+            {
+                character.NotHacked();
+            }
         }
     }
 
@@ -191,6 +252,24 @@ public class BrainwaveDevice : MonoBehaviour
         if (useLeftBrainPower == true || useRightBrainPower == true)
         {
             m_Target.SendBrainCommand(useLeftBrainPower, useRightBrainPower);
+        }
+    }
+
+    private void UpdateVisuals()
+    {
+        if (m_Visuals == null)
+            return;
+
+        m_Visuals.SetFrequency(m_Frequency);
+        m_Visuals.SetAmplitude(m_Amplitude);
+
+        if (m_Target == null)
+        {
+
+        }
+        else
+        {
+            m_Visuals.SetTarget(m_Target.transform);
         }
     }
 }
