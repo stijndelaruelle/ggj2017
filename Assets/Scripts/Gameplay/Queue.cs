@@ -9,8 +9,20 @@ public class Queue : MonoBehaviour
     [SerializeField]
     private int m_NumberOfCharacters;
 
+    [SerializeField]
+    private CharacterManager m_CharacterManager;
+
     [Space(10)]
-    [Header("Required references")]
+    [Header("Special characters")]
+    [Space(5)]
+    [SerializeField]
+    private PlayerCharacter m_Player;
+
+    [SerializeField]
+    private CachierCharacter m_Cachier;
+
+    [Space(10)]
+    [Header("Special positions")]
     [Space(5)]
     [SerializeField]
     private Transform m_StartPosition;
@@ -18,13 +30,13 @@ public class Queue : MonoBehaviour
     [SerializeField]
     private Transform m_EndPosition;
 
-    [SerializeField]
-    private Transform m_CachierPosition;
-    private CachierCharacter m_Cachier;
-
-    [SerializeField]
-    private CharacterManager m_CharacterManager;
     private List<Character> m_Characters;
+
+    private void Awake()
+    {
+        //Subscribe to the cachier events
+        m_Cachier.ChangeTicketsEvent += OnChangeTickets;
+    }
 
     private void Start()
     {
@@ -37,10 +49,8 @@ public class Queue : MonoBehaviour
             if (character != null) { Insert(m_Characters.Count, character, true); }
         }
 
-        //Spawn cachier
-        m_Cachier = m_CharacterManager.SpawnCachier(m_EndPosition);
-        m_Cachier.WarpToPosition(m_CachierPosition.position);
-        m_Cachier.SellTicketEvent += OnSellTicket;
+        //Add player to the back of the queue
+        Insert(m_Characters.Count, m_Player, true);
     }
 
     private void OnDestroy()
@@ -55,7 +65,7 @@ public class Queue : MonoBehaviour
 
         if (m_Cachier != null)
         {
-            m_Cachier.SellTicketEvent -= OnSellTicket;
+            m_Cachier.ChangeTicketsEvent -= OnChangeTickets;
         }
     }
 
@@ -134,9 +144,27 @@ public class Queue : MonoBehaviour
         Remove(character);
     }
 
-    private void OnSellTicket()
+    private void OnChangeTickets(int tickets, int maxTickets)
     {
+        if (m_Characters == null || m_Characters.Count == 0)
+            return;
+
         m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
+
+        if (m_Characters.Count <= 1)
+            return;
+
+        //The player is buying a ticket, he wins!
+        if (m_Characters[1] == m_Player)
+        {
+            Debug.Log("PLAYER WINS");
+        }
+
+        //If this was the last ticket, the player loses
+        if (tickets == 0)
+        {
+            Debug.Log("PLAYER LOSES");
+        }
     }
 
     //Sequential movement (looks nicer

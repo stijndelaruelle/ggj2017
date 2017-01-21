@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Sjabloon;
+using System;
 
 public class BrainwaveDevice : MonoBehaviour
 {
     [SerializeField]
-    private CharacterManager m_CharacterManager;
-
-    [SerializeField]
-    private int m_DeviceID;
+    private int m_DeviceID = -1;
 
     [SerializeField]
     private float m_CirclesToMax = 1;
@@ -18,7 +16,7 @@ public class BrainwaveDevice : MonoBehaviour
     private float m_ErrorMargin;
 
     [SerializeField]
-    private MindwaveSelector m_Visuals;
+    private CharacterManager m_CharacterManager;
 
     private float m_Frequency;
     private float m_PreviousFrequencyAngle;
@@ -40,8 +38,39 @@ public class BrainwaveDevice : MonoBehaviour
 
     private Character m_Target;
 
+    //When the device get's hacked
+    private bool m_InversedControls;
+    public bool InversedControls
+    {
+        get { return m_InversedControls; }
+        set { m_InversedControls = value; }
+    }
+
+    private bool m_SwitchedControls;
+    public bool SwitchedControls
+    {
+        get { return m_SwitchedControls; }
+        set { m_SwitchedControls = value; }
+    }
+
+    //Event
+    private Action<float, float> m_UpdateValuesEvent;
+    public Action<float, float> UpdateValuesEvent
+    {
+        get { return m_UpdateValuesEvent; }
+        set { m_UpdateValuesEvent = value; }
+    }
+
+    private Action<Character> m_UpdateTargetEvent;
+    public Action<Character> UpdateTargetEvent
+    {
+        get { return m_UpdateTargetEvent; }
+        set { m_UpdateTargetEvent = value; }
+    }
+
     //Cache
     private InputManager m_InputManager;
+
 
     private void Start()
     {
@@ -59,13 +88,17 @@ public class BrainwaveDevice : MonoBehaviour
 
     private void Update()
     {
+        if (m_DeviceID == -1)
+            return;
+
         UpdateFrequency();
         UpdateAmplitude();
 
         UpdateHacking();
         UpdateCommand();
 
-        UpdateVisuals();
+        if (m_UpdateValuesEvent != null)
+            m_UpdateValuesEvent(m_Frequency, m_Amplitude);
     }
 
     private void UpdateFrequency()
@@ -73,6 +106,12 @@ public class BrainwaveDevice : MonoBehaviour
         //Gather input
         float newFrequencyX = m_InputManager.GetAxis("Frequency_X_" + m_DeviceID);
         float newFrequencyY = m_InputManager.GetAxis("Frequency_Y_" + m_DeviceID);
+
+        if (m_SwitchedControls)
+        {
+            newFrequencyX = m_InputManager.GetAxis("Amplitude_X_" + m_DeviceID);
+            newFrequencyY = m_InputManager.GetAxis("Amplitude_Y_" + m_DeviceID);
+        }
 
         Vector2 newFrequencyVector = new Vector2(newFrequencyX, newFrequencyY);
         float distance = newFrequencyVector.magnitude;
@@ -84,6 +123,12 @@ public class BrainwaveDevice : MonoBehaviour
         }
 
         newFrequencyVector.Normalize();
+
+        if (m_InversedControls)
+        {
+            newFrequencyVector.x = 1.0f - newFrequencyVector.x;
+            newFrequencyVector.y = 1.0f - newFrequencyVector.y;
+        }
 
         float angle = Mathf.Atan2(newFrequencyVector.y, newFrequencyVector.x) * Mathf.Rad2Deg;
         angle += 90.0f;
@@ -97,6 +142,48 @@ public class BrainwaveDevice : MonoBehaviour
         m_Frequency = angle / 360.0f;
     }
 
+    private void UpdateAmplitude()
+    {
+        //Gather input
+        float newAmplitudeX = m_InputManager.GetAxis("Amplitude_X_" + m_DeviceID);
+        float newAmplitudeY = m_InputManager.GetAxis("Amplitude_Y_" + m_DeviceID);
+
+        if (m_SwitchedControls)
+        {
+            newAmplitudeX = m_InputManager.GetAxis("Frequency_X_" + m_DeviceID);
+            newAmplitudeY = m_InputManager.GetAxis("Frequency_Y_" + m_DeviceID);
+        }
+
+        Vector2 newAmplitudeVector = new Vector2(newAmplitudeX, newAmplitudeY);
+        float distance = newAmplitudeVector.magnitude;
+
+        if (distance < 0.5f)
+        {
+            m_Amplitude = 0.0f;
+            return;
+        }
+
+        newAmplitudeVector.Normalize();
+
+        if (m_InversedControls)
+        {
+            newAmplitudeVector.x = 1.0f - newAmplitudeVector.x;
+            newAmplitudeVector.y = 1.0f - newAmplitudeVector.y;
+        }
+
+        float angle = Mathf.Atan2(newAmplitudeVector.y, newAmplitudeVector.x) * Mathf.Rad2Deg;
+        angle += 90.0f;
+
+        if (angle < 0.0f) { angle += 360.0f; }
+        if (angle > 360.0f) { angle -= 360.0f; }
+        
+        //Invert
+        angle = 360.0f - angle;
+
+        m_Amplitude = angle / 360.0f;
+    }
+
+    //Legacy
     private void UpdateFrequencyTurning()
     {
         //Gather input
@@ -121,41 +208,12 @@ public class BrainwaveDevice : MonoBehaviour
 
         //We probably made a turn
         if (diffAngle < -350.0f) { diffAngle += 360.0f; }
-        if (diffAngle > 350.0f)  { diffAngle -= 360.0f; }
+        if (diffAngle > 350.0f) { diffAngle -= 360.0f; }
 
         m_Frequency += (diffAngle / 360) / m_CirclesToMax;
         m_Frequency = Mathf.Clamp01(m_Frequency);
 
         m_PreviousFrequencyAngle = angle;
-    }
-
-    private void UpdateAmplitude()
-    {
-        //Gather input
-        float newAmplitudeX = m_InputManager.GetAxis("Amplitude_X_" + m_DeviceID);
-        float newAmplitudeY = m_InputManager.GetAxis("Amplitude_Y_" + m_DeviceID);
-
-        Vector2 newAmplitudeVector = new Vector2(newAmplitudeX, newAmplitudeY);
-        float distance = newAmplitudeVector.magnitude;
-
-        if (distance < 0.5f)
-        {
-            m_Amplitude = 0.0f;
-            return;
-        }
-
-        newAmplitudeVector.Normalize();
-
-        float angle = Mathf.Atan2(newAmplitudeVector.y, newAmplitudeVector.x) * Mathf.Rad2Deg;
-        angle += 90.0f;
-
-        if (angle < 0.0f) { angle += 360.0f; }
-        if (angle > 360.0f) { angle -= 360.0f; }
-        
-        //Invert
-        angle = 360.0f - angle;
-
-        m_Amplitude = angle / 360.0f;
     }
 
     private void UpdateAmplitudeTurning()
@@ -221,7 +279,6 @@ public class BrainwaveDevice : MonoBehaviour
             {
                 character.FullyHacked();
                 m_Target = character;
-                return;
             }
 
             //Almost there, give feedback!
@@ -235,6 +292,9 @@ public class BrainwaveDevice : MonoBehaviour
                 character.NotHacked();
             }
         }
+
+        if (m_UpdateTargetEvent != null)
+            m_UpdateTargetEvent(m_Target);
     }
 
     private void UpdateCommand()
@@ -252,24 +312,6 @@ public class BrainwaveDevice : MonoBehaviour
         if (useLeftBrainPower == true || useRightBrainPower == true)
         {
             m_Target.SendBrainCommand(useLeftBrainPower, useRightBrainPower);
-        }
-    }
-
-    private void UpdateVisuals()
-    {
-        if (m_Visuals == null)
-            return;
-
-        m_Visuals.SetFrequency(m_Frequency);
-        m_Visuals.SetAmplitude(m_Amplitude);
-
-        if (m_Target == null)
-        {
-
-        }
-        else
-        {
-            m_Visuals.SetTarget(m_Target.transform);
         }
     }
 }

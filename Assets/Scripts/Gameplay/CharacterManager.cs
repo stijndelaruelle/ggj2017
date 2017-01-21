@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sjabloon;
 
 public class CharacterManager : MonoBehaviour
 {
-    [SerializeField]
-    private Character m_CachierPrefab;
-
     [SerializeField]
     private Character m_RandomCharacterPrefab;
 
@@ -26,14 +24,6 @@ public class CharacterManager : MonoBehaviour
     private void Awake()
     {
         m_Characters = new List<Character>();
-    }
-
-    public CachierCharacter SpawnCachier(Transform transform)
-    {
-        CachierCharacter character = GameObject.Instantiate(m_CachierPrefab, transform.position, Quaternion.identity) as CachierCharacter;
-        m_Characters.Add(character);
-
-        return character;
     }
 
     public Character SpawnRandomCharacter()
@@ -61,6 +51,7 @@ public class CharacterManager : MonoBehaviour
 
         return character;
     }
+
 
     public Character GetRandomCharacter()
     {

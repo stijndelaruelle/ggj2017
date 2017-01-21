@@ -16,7 +16,7 @@ public class MindwaveTargetTester : MonoBehaviour {
     public void NextTarget() {
         currentGO++;
         if(currentGO>=gos.Count)currentGO = 0;
-        selector.SetTarget(gos[currentGO].transform);
+        //selector.SetTarget(gos[currentGO].transform);
     }
 
 }
