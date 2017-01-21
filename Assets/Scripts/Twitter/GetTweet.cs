@@ -27,7 +27,7 @@ public class GetTweet : MonoBehaviour
 	{
 		if(Input.GetKeyUp(KeyCode.Space))
 		{
-			Tweet requestedTweet = Twitter.Instance.RandomHashTag().GetRandomTweet();
+			Tweet requestedTweet = Twitter.Instance.GetRandomHashTag().GetRandomTweet();
 
 			_characterText.text = requestedTweet.ScrambledContents;
 

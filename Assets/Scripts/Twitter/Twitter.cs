@@ -80,7 +80,7 @@ public class Twitter : MonoBehaviour
 		return hashTagToFind;
 	}
 
-	public HashtagList RandomHashTag()
+	public HashtagList GetRandomHashTag()
 	{
 		if(_hashTagLists.Count == 0)
 		{
