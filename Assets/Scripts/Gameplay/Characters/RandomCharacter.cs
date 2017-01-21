@@ -39,7 +39,7 @@ public class RandomCharacter : Character
     private void RandomizeCharacter()
     {
         RandomizeGender();
-        RandomizeWidth();
+        RandomizeBodyType();
         RandomizeFrequency();
     }
 
@@ -65,17 +65,13 @@ public class RandomCharacter : Character
         }
     }
 
-    private void RandomizeWidth()
+    private void RandomizeBodyType()
     {
-        //Random width
-        CharacterStatistics stats = m_SkeletonAnimation.GetComponent<CharacterStatistics>();
+        m_BodyType = (BodyType)UnityEngine.Random.Range(0, 2);
 
-        if (stats != null)
-            m_Width = stats.Width;
-        
-        
-        // UnityEngine.Random.Range(0.75f * m_VisualWidth, 1.25f * m_VisualWidth);
-        //m_SkeletonAnimation.transform.localScale = new Vector3(m_Width / m_VisualWidth, 1.0f, 1.0f);
+        //Visual width
+        CharacterStatistics stats = m_SkeletonAnimation.GetComponent<CharacterStatistics>();
+        if (stats != null) { m_Width = stats.Width; }
     }
 
 }
