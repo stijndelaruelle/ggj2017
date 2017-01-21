@@ -8,8 +8,8 @@ public class SpawnPosition : MonoBehaviour
     {
         float sign = Mathf.Sign(transform.position.x);
 
-        float viewportX = 1.1f;
-        if (sign < 0.0f) { viewportX = -0.1f; }
+        float viewportX = 1.2f;
+        if (sign < 0.0f) { viewportX = -0.2f; }
 
         //Place ourselves at the outsides of town
         Vector3 worldPosX = Camera.main.ViewportToWorldPoint(new Vector3(viewportX, 0.0f, 0.0f));

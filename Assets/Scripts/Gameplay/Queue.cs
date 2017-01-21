@@ -45,7 +45,7 @@ public class Queue : MonoBehaviour
         //Spawn characters
         for (int i = 0; i < m_NumberOfCharacters; ++i)
         {
-            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition);
+            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition.position);
             if (character != null) { Insert(m_Characters.Count, character, true); }
         }
 
@@ -142,6 +142,9 @@ public class Queue : MonoBehaviour
     private void OnCharacterRunAway(Character character)
     {
         Remove(character);
+
+        //Cheap fix
+        m_Cachier.IncreaseSellTime(5.0f);
     }
 
     private void OnChangeTickets(int tickets, int maxTickets)
@@ -167,7 +170,7 @@ public class Queue : MonoBehaviour
         }
     }
 
-    //Sequential movement (looks nicer
+    //Sequential movement (looks nicer)
     private IEnumerator RemoveMovementSequentailly(int position, Character oldCharacter)
     {
         //All characters have to move forwards (with the width of the old character)

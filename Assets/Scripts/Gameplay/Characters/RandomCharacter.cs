@@ -33,19 +33,18 @@ public class RandomCharacter : Character
         //Random gender
         m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
 
-        //switch (m_Gender)
-        //{
-        //    case Gender.Male:
-        //        m_SpriteRenderer.color = Color.blue;
-        //        break;
+        if (m_Gender == Gender.Female)
+        {
+            transform.Rotate(0.0f, 0.0f, 10.0f);
+        }
+    }
 
-        //    case Gender.Female:
-        //        m_SpriteRenderer.color = Color.red;
-        //        break;
+    protected override void ExecuteNegativeCommand()
+    {
+        base.ExecuteNegativeCommand();
 
-        //    default:
-        //        break;
-        //}
+        m_MoveSpeed *= 3.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
     private void RandomizeWidth()
