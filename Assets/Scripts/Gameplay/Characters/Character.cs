@@ -82,6 +82,10 @@ public class Character : MonoBehaviour
 
     private float m_LerpTimer = 0.0f;
     protected bool m_HasReachedDestination = false;
+    public bool HasReachedDestination
+    {
+        get { return m_HasReachedDestination; }
+    }
     private bool m_WasOnScreen = false;
 
     //Events
@@ -181,13 +185,18 @@ public class Character : MonoBehaviour
 
         //Facing direction
         Vector3 diff = m_TargetPosition - m_LastPosition;
-        float sign = Mathf.Sign(diff.x);
+        float sign = 1.0f;
+
+        if (m_TargetPosition != m_LastPosition)
+        {
+            Mathf.Sign(diff.x);
+        }
 
         Vector3 scale = m_SkeletonAnimation.transform.localScale;
         m_SkeletonAnimation.transform.localScale = new Vector3(sign * scale.x, scale.y, scale.z);
     }
 
-    public void MoveToPositionSequentially(Vector3 position)
+    public virtual void MoveToPositionSequentially(Vector3 position)
     {
         m_MoveSpeed *= 2.0f;
         StartCoroutine(MoveToPositionSequentiallyRoutine(position));

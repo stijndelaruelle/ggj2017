@@ -29,9 +29,8 @@ public class Queue : MonoBehaviour
 
     [SerializeField]
     private Transform m_EndPosition;
-
     private List<Character> m_Characters;
-
+    private List<RandomCharacter> m_RandomCharacters;
     private void Awake()
     {
         //Subscribe to the cachier events
@@ -41,12 +40,22 @@ public class Queue : MonoBehaviour
     private void Start()
     {
         m_Characters = new List<Character>();
+        m_RandomCharacters = new List<RandomCharacter>();
 
         //Spawn characters
         for (int i = 0; i < m_NumberOfCharacters; ++i)
         {
-            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition.position);
-            if (character != null) { Insert(m_Characters.Count, character, true); }
+            RandomCharacter character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition.position);
+            if (character != null)
+            {
+                //Subscribe to events
+                character.StartCallingEvent += OnCharacterStartCalling;
+                character.CancelCallingEvent += OnCharacterCancelCalling;
+                character.StopCallingEvent += OnCharacterStopCalling;
+
+                Insert(m_Characters.Count, character, true);
+                m_RandomCharacters.Add(character);
+            }
         }
 
         //Add player to the back of the queue
@@ -66,6 +75,16 @@ public class Queue : MonoBehaviour
         if (m_Cachier != null)
         {
             m_Cachier.ChangeTicketsEvent -= OnChangeTickets;
+        }
+
+        if (m_RandomCharacters != null)
+        {
+            foreach (RandomCharacter character in m_RandomCharacters)
+            {
+                character.StartCallingEvent -= OnCharacterStartCalling;
+                character.CancelCallingEvent -= OnCharacterCancelCalling;
+                character.StopCallingEvent -= OnCharacterStopCalling;
+            }
         }
     }
 
@@ -118,7 +137,20 @@ public class Queue : MonoBehaviour
         int index = m_Characters.IndexOf(character);
 
         if (index != -1)
+        {
             Remove(index);
+
+            //So dirty, I never want to look back
+            RandomCharacter randomCharacter = (RandomCharacter)character;
+            if (m_RandomCharacters.Contains(randomCharacter))
+            {
+                randomCharacter.StartCallingEvent -= OnCharacterStartCalling;
+                randomCharacter.CancelCallingEvent -= OnCharacterCancelCalling;
+                randomCharacter.StopCallingEvent -= OnCharacterStopCalling;
+
+                m_RandomCharacters.Remove(randomCharacter);
+            }
+        }
     }
 
     private void Remove(int position)
@@ -170,6 +202,37 @@ public class Queue : MonoBehaviour
         }
     }
 
+    //Calling events
+    private void OnCharacterStartCalling()
+    {
+        //Make sure all the other characters can't start calling
+        foreach (RandomCharacter character in m_RandomCharacters)
+        {
+            character.AllowCalling = false;
+        }
+    }
+
+    private void OnCharacterCancelCalling()
+    {
+        //Make sure everyone can call again
+        foreach (RandomCharacter character in m_RandomCharacters)
+        {
+            character.AllowCalling = true;
+        }
+    }
+
+    private void OnCharacterStopCalling(Character character)
+    {
+        //Make sure everyone can call again
+        foreach (RandomCharacter randomCharacter in m_RandomCharacters)
+        {
+            randomCharacter.AllowCalling = true;
+        }
+
+        //Call in a friend
+        StartCoroutine(CallAFriendRoutine(character));
+    }
+
     //Sequential movement (looks nicer)
     private IEnumerator RemoveMovementSequentailly(int position, Character oldCharacter)
     {
@@ -184,5 +247,36 @@ public class Queue : MonoBehaviour
             float randTime = UnityEngine.Random.Range(0.1f, 0.5f);
             yield return new WaitForSeconds(randTime);
         }
+    }
+
+    private IEnumerator CallAFriendRoutine(Character character)
+    {
+        //Spawn a new character
+        RandomCharacter friendCharacter = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition.position);
+
+        //Make the character move to the current position
+        Vector3 newPosition = new Vector3(character.GamePosition.x - character.Width, m_StartPosition.position.y, transform.position.z);
+
+        friendCharacter.MoveToPosition(newPosition);
+
+        //Wait for arrival
+        while (friendCharacter.HasReachedDestination == false)
+        {
+            //Check if our desination changed, if so, move again!
+            Vector3 tempPos = new Vector3(character.GamePosition.x - character.Width, m_StartPosition.position.y, transform.position.z);
+
+            if (newPosition != tempPos)
+            {
+                newPosition = tempPos;
+                friendCharacter.MoveToPosition(newPosition);
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        //Once arrive, enter the queue
+        int index = m_Characters.IndexOf(character);
+        Insert(index + 1, friendCharacter);
+        m_RandomCharacters.Add(friendCharacter);
     }
 }

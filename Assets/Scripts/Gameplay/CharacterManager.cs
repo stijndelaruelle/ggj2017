@@ -25,7 +25,7 @@ public class CharacterManager : MonoBehaviour
     private float m_SpawnTimer = 0.0f;
 
     [SerializeField]
-    private Character m_RandomCharacterPrefab;
+    private RandomCharacter m_RandomCharacterPrefab;
 
     //Holds a reference for every single character in the scene
     [SerializeField]
@@ -57,7 +57,7 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    public Character SpawnRandomCharacter()
+    public RandomCharacter SpawnRandomCharacter()
     {
         if (m_SpawnLocations.Count == 0)
             return null;
@@ -75,9 +75,9 @@ public class CharacterManager : MonoBehaviour
         return SpawnRandomCharacterAtPosition(randSpawnPotion);
     }
 
-    public Character SpawnRandomCharacterAtPosition(Vector3 position)
+    public RandomCharacter SpawnRandomCharacterAtPosition(Vector3 position)
     {
-        Character character = GameObject.Instantiate(m_RandomCharacterPrefab, position, Quaternion.identity);
+        RandomCharacter character = GameObject.Instantiate(m_RandomCharacterPrefab, position, Quaternion.identity);
         character.DestroyEvent += OnCharacterDestroy;
 
         m_Characters.Add(character);
