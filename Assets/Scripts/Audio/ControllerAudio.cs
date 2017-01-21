@@ -30,7 +30,7 @@ public class ControllerAudio : MonoBehaviour
 	#region Methods
 	void SetPitch()
 	{
-		Debug.Log(_brainWaveDevice.MinimalDifference);
+		//Debug.Log(_brainWaveDevice.MinimalDifference);
 		_audioPitch.pitch = 100 * (.25f - _brainWaveDevice.MinimalDifference);
 	}
 	#endregion
