@@ -16,19 +16,27 @@ public class CachierCharacter : Character
     private float m_SellTimer;
 
     [SerializeField]
-    private float m_Tickets = 20;
-    private float m_TicketsLeft = 1;
+    private int m_Tickets = 20;
+    private int m_TicketsLeft = 1;
 
     [SerializeField]
     private float m_TimeGoneAfterHacked = 2;
     private bool m_IsGone = false;
 
     //Events
-    private Action m_SellTicketEvent;
-    public Action SellTicketEvent
+    private Action<int, int> m_ChangeTicketEvent;
+    public Action<int, int> ChangeTicketsEvent
     {
-        get { return m_SellTicketEvent; }
-        set { m_SellTicketEvent = value; }
+        get { return m_ChangeTicketEvent; }
+        set { m_ChangeTicketEvent = value; }
+    }
+
+    private void Start()
+    {
+        ResetSellTimer();
+
+        m_TicketsLeft = m_Tickets;
+        FireChangeTicketEvent();
     }
 
     protected override void Update()
@@ -40,7 +48,7 @@ public class CachierCharacter : Character
 
     private void UpdateSelling()
     {
-        if (m_IsGone)
+        if (m_IsGone || m_Tickets <= 0)
             return;
 
         m_SellTimer -= Time.deltaTime;
@@ -48,16 +56,25 @@ public class CachierCharacter : Character
         if (m_SellTimer <= 0.0f)
         {
             SellTicket();
-            m_SellTimer = UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
+            ResetSellTimer();
         }
     }
 
     private void SellTicket()
     {
-        m_Tickets -= 1;
+        m_TicketsLeft -= 1;
+        FireChangeTicketEvent();
+    }
 
-        if (m_SellTicketEvent != null)
-            m_SellTicketEvent();
+    private void ResetSellTimer()
+    {
+        m_SellTimer = UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
+    }
+
+    private void FireChangeTicketEvent()
+    {
+        if (m_ChangeTicketEvent != null)
+            m_ChangeTicketEvent(m_TicketsLeft, m_Tickets);
     }
 
     protected override void ExecuteNegativeCommand()

@@ -23,14 +23,14 @@ public class Character : MonoBehaviour
     }
 
     [SerializeField]
-    protected float m_Frequency;
+    protected float m_Frequency = -1;
     public float Frequency
     {
         get { return m_Frequency; }
     }
 
     [SerializeField]
-    protected float m_Amplitude;
+    protected float m_Amplitude = -1;
     public float Amplitude
     {
         get { return m_Amplitude; }
@@ -289,7 +289,28 @@ public class Character : MonoBehaviour
     //Randomize
     protected void RandomizeFrequency()
     {
+        //Frequency is dependant on the width
+        //Big characters have a lower range than thin characters
+
         m_Frequency = UnityEngine.Random.Range(0.05f, 1.0f);
+
+        //Amplitude is dependant on the gender
+        float minRadius = 0.05f;
+        float maxRange = 0.95f;
+
+        switch (m_Gender)
+        {
+            case Gender.Male:
+
+                break;
+
+            case Gender.Female:
+                break;
+
+            default:
+                break;
+        }
+
         m_Amplitude = UnityEngine.Random.Range(0.05f, 1.0f);
     }
 }
