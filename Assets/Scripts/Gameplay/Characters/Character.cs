@@ -24,9 +24,6 @@ public class Character : MonoBehaviour
     }
 
     [SerializeField]
-    protected float m_VisualWidth;
-
-    [SerializeField]
     protected float m_Frequency = -1;
     public float Frequency
     {

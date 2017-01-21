@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Spine.Unity;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,12 @@ public class RandomCharacter : Character
     [Tooltip("Disable for debugging")]
     private bool m_RandomizeCharacteristics;
 
+    [SerializeField]
+    protected SkeletonAnimation m_SkinnyGuyCharacter;
+
+    [SerializeField]
+    protected SkeletonAnimation m_SkinnyGirlCharacter;
+
     protected override void Awake()
     {
         base.Awake();
@@ -19,6 +26,14 @@ public class RandomCharacter : Character
         {
             RandomizeCharacter();
         }
+    }
+
+    protected override void ExecuteNegativeCommand()
+    {
+        base.ExecuteNegativeCommand();
+
+        m_MoveSpeed *= 3.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
     private void RandomizeCharacter()
@@ -33,25 +48,34 @@ public class RandomCharacter : Character
         //Random gender
         m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
 
-        if (m_Gender == Gender.Female)
+        switch (m_Gender)
         {
-            transform.Rotate(0.0f, 0.0f, 10.0f);
+            case Gender.Male:
+                m_SkeletonAnimation = GameObject.Instantiate(m_SkinnyGuyCharacter, transform);
+                m_SkeletonAnimation.transform.localPosition = Vector3.zero;
+                break;
+
+            case Gender.Female:
+                m_SkeletonAnimation = GameObject.Instantiate(m_SkinnyGirlCharacter, transform);
+                m_SkeletonAnimation.transform.localPosition = Vector3.zero;
+                break;
+
+            default:
+                break;
         }
-    }
-
-    protected override void ExecuteNegativeCommand()
-    {
-        base.ExecuteNegativeCommand();
-
-        m_MoveSpeed *= 3.0f;
-        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
     private void RandomizeWidth()
     {
         //Random width
-        m_Width = UnityEngine.Random.Range(0.75f * m_VisualWidth, 1.25f * m_VisualWidth);
-        m_SkeletonAnimation.transform.localScale = new Vector3(m_Width / m_VisualWidth, 1.0f, 1.0f);
+        CharacterStatistics stats = m_SkeletonAnimation.GetComponent<CharacterStatistics>();
+
+        if (stats != null)
+            m_Width = stats.Width;
+        
+        
+        // UnityEngine.Random.Range(0.75f * m_VisualWidth, 1.25f * m_VisualWidth);
+        //m_SkeletonAnimation.transform.localScale = new Vector3(m_Width / m_VisualWidth, 1.0f, 1.0f);
     }
 
 }
