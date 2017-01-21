@@ -48,12 +48,10 @@ public class CachierCharacter : Character
     {
         base.Start();
 
-        ResetSellTimer();
-
         m_TicketsLeft = m_Tickets;
         FireChangeTicketEvent();
 
-        MoveToPosition(m_StandPosition.position);
+        StartCoroutine(ComeBackRoutine(m_StandPosition.position));
     }
 
     protected override void Update()
@@ -90,9 +88,9 @@ public class CachierCharacter : Character
         }
     }
 
-    private void ResetSellTimer()
+    public void ResetSellTimer()
     {
-        m_SellTimer = UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
+        m_SellTimer = m_MaxSellTime; //UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
     }
 
     private void FireChangeTicketEvent()
@@ -101,16 +99,27 @@ public class CachierCharacter : Character
             m_ChangeTicketEvent(m_TicketsLeft, m_Tickets);
     }
 
-    public void IncreaseSellTime(float time)
-    {
-        //Cheap fix 
-        m_SellTimer += time;
-    }
-
     protected override void ExecuteNegativeCommand()
     {
         base.ExecuteNegativeCommand();
         StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
+    }
+
+    private IEnumerator ComeBackRoutine(Vector3 position)
+    {
+        m_IsGone = true;
+
+        MoveToPosition(position);
+
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        m_IsGone = false;
+        ResetSellTimer();
+
+        yield return null;
     }
 
     private IEnumerator MoveAndComeBackRoutine(Vector3 position)
@@ -122,11 +131,22 @@ public class CachierCharacter : Character
         Vector3 oldPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         MoveToPosition(position);
 
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         yield return new WaitForSeconds(m_TimeGoneAfterHacked);
 
         MoveToPosition(oldPosition);
 
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         m_IsGone = false;
+        ResetSellTimer();
 
         yield return null;
     }
