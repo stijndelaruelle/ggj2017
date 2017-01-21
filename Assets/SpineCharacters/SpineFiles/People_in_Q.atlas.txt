@@ -1,0 +1,83 @@
+
+People_in_Q.png
+size: 512,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Character Images/body
+  rotate: false
+  xy: 166, 9
+  size: 89, 112
+  orig: 89, 112
+  offset: 0, 0
+  index: -1
+Character Images/head
+  rotate: true
+  xy: 2, 2
+  size: 119, 162
+  orig: 119, 162
+  offset: 0, 0
+  index: -1
+Character Images/left arm
+  rotate: false
+  xy: 356, 82
+  size: 41, 39
+  orig: 41, 39
+  offset: 0, 0
+  index: -1
+Character Images/left hand
+  rotate: false
+  xy: 257, 62
+  size: 49, 59
+  orig: 49, 59
+  offset: 0, 0
+  index: -1
+Character Images/left leg
+  rotate: true
+  xy: 308, 51
+  size: 22, 33
+  orig: 22, 33
+  offset: 0, 0
+  index: -1
+Character Images/left shoe
+  rotate: false
+  xy: 399, 94
+  size: 36, 27
+  orig: 36, 27
+  offset: 0, 0
+  index: -1
+Character Images/neck
+  rotate: true
+  xy: 473, 92
+  size: 29, 31
+  orig: 29, 31
+  offset: 0, 0
+  index: -1
+Character Images/right arm
+  rotate: false
+  xy: 308, 75
+  size: 46, 46
+  orig: 46, 46
+  offset: 0, 0
+  index: -1
+Character Images/right hand
+  rotate: false
+  xy: 257, 9
+  size: 43, 51
+  orig: 43, 51
+  offset: 0, 0
+  index: -1
+Character Images/right leg
+  rotate: false
+  xy: 302, 18
+  size: 21, 31
+  orig: 21, 31
+  offset: 0, 0
+  index: -1
+Character Images/right shoe
+  rotate: false
+  xy: 437, 93
+  size: 34, 28
+  orig: 34, 28
+  offset: 0, 0
+  index: -1
