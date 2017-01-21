@@ -138,7 +138,7 @@ public class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (m_SkeletonAnimation.AnimationName == "")
+        if (m_SkeletonAnimation.AnimationName == null)
             UpdateAnimation("idle");
     }
 
