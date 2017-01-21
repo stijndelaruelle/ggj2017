@@ -17,7 +17,13 @@ public class RandomCharacter : Character
     protected SkeletonAnimation m_SkinnyGuyCharacter;
 
     [SerializeField]
+    protected SkeletonAnimation m_BuffGuyCharacter;
+
+    [SerializeField]
     protected SkeletonAnimation m_SkinnyGirlCharacter;
+
+    [SerializeField]
+    protected SkeletonAnimation m_BuffGirlCharacter;
 
     [Space(10)]
     [Header("Call a friend")]
@@ -105,8 +111,6 @@ public class RandomCharacter : Character
             //Make sure noboy else start's calling
             if (m_StartCallingEvent != null)
                 m_StartCallingEvent();
-
-            //transform.Rotate(0.0f, 0.0f, 180.0f);
         }
     }
 
@@ -159,40 +163,23 @@ public class RandomCharacter : Character
 
     private void RandomizeCharacter()
     {
-        RandomizeGender();
-        RandomizeBodyType();
-        RandomizeFrequency();
-    }
-
-    private void RandomizeGender()
-    {
-        //Random gender
         m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
-
-        switch (m_Gender)
-        {
-            case Gender.Male:
-                m_SkeletonAnimation = GameObject.Instantiate(m_SkinnyGuyCharacter, transform);
-                m_SkeletonAnimation.transform.localPosition = Vector3.zero;
-                break;
-
-            case Gender.Female:
-                m_SkeletonAnimation = GameObject.Instantiate(m_SkinnyGirlCharacter, transform);
-                m_SkeletonAnimation.transform.localPosition = Vector3.zero;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private void RandomizeBodyType()
-    {
         m_BodyType = (BodyType)UnityEngine.Random.Range(0, 2);
+
+        SkeletonAnimation prefab = m_SkinnyGuyCharacter;
+
+        if (m_Gender == Gender.Male && m_BodyType == BodyType.Small)   { prefab = m_SkinnyGuyCharacter; }
+        if (m_Gender == Gender.Male && m_BodyType == BodyType.Big)     { prefab = m_BuffGuyCharacter; }
+        if (m_Gender == Gender.Female && m_BodyType == BodyType.Small) { prefab = m_SkinnyGirlCharacter; }
+        if (m_Gender == Gender.Female && m_BodyType == BodyType.Big)   { prefab = m_BuffGirlCharacter; }
+
+        m_SkeletonAnimation = GameObject.Instantiate(prefab, transform);
+        m_SkeletonAnimation.transform.localPosition = Vector3.zero;
 
         //Visual width
         CharacterStatistics stats = m_SkeletonAnimation.GetComponent<CharacterStatistics>();
         if (stats != null) { m_Width = stats.Width; }
-    }
 
+        RandomizeFrequency();
+    }
 }
