@@ -19,6 +19,7 @@ public class TextBalloon : MonoBehaviour
     private float m_TextBalloonDecativateTimer;
 
 	private Tweet m_CharacterTweet;
+    private bool m_IsHacking = false;
 
     private void Awake()
     {
@@ -36,7 +37,6 @@ public class TextBalloon : MonoBehaviour
     {
         m_Character.HalfHackedEvent += OnHalfHacked;
         m_Character.FullHackedEvent += OnFullHacked;
-        m_Character.NotHackedEvent  += OnNotHacked;
     }
 
     private void OnDestroy()
@@ -46,11 +46,16 @@ public class TextBalloon : MonoBehaviour
 
         m_Character.HalfHackedEvent -= OnHalfHacked;
         m_Character.FullHackedEvent -= OnFullHacked;
-        m_Character.NotHackedEvent  -= OnNotHacked;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+        if (m_IsHacking == false)
+        {
+            m_TextBalloonActivateTimer = 0.0f;
+        }
+        m_IsHacking = false;
+
         //Activate
         if (m_TextBalloonActivateTimer > 0.0f)
         {
@@ -84,6 +89,8 @@ public class TextBalloon : MonoBehaviour
 
     private void OnHalfHacked()
     {
+        m_IsHacking = true;
+
         if (m_Text == null)
             return;
 
@@ -101,6 +108,8 @@ public class TextBalloon : MonoBehaviour
 
     private void OnFullHacked()
     {
+        m_IsHacking = true;
+
         if (m_Text == null)
             return;
 
@@ -110,10 +119,5 @@ public class TextBalloon : MonoBehaviour
             m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
 
         m_TextBalloonDecativateTimer = m_TextBalloonActivateTime;
-    }
-
-    private void OnNotHacked()
-    {
-        m_TextBalloonActivateTimer = 0.0f;
     }
 }

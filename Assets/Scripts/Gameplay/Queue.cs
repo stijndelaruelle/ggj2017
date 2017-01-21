@@ -223,8 +223,9 @@ public class Queue : MonoBehaviour
 
     }
 
-    void GameWin() {
-            GameoverWin.SetActive(true);
+    private void GameWin()
+    {
+        GameoverWin.SetActive(true);
     }
 
     //Calling events
