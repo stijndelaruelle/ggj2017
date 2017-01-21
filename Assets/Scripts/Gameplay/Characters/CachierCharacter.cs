@@ -23,6 +23,12 @@ public class CachierCharacter : Character
     private float m_TimeGoneAfterHacked = 2;
     private bool m_IsGone = false;
 
+    [SerializeField]
+    private Transform m_StandPosition;
+
+    [SerializeField]
+    List<ParticleSystem> CashMoneyEmitters = new List<ParticleSystem>();
+
     //Events
     private Action<int, int> m_ChangeTicketEvent;
     public Action<int, int> ChangeTicketsEvent
@@ -31,14 +37,19 @@ public class CachierCharacter : Character
         set { m_ChangeTicketEvent = value; }
     }
 
-    protected override void Start()
+    private Action<int> m_SellTicketEvent;
+    public Action<int> SellTicketEvent
     {
-        base.Start();
+        get { return m_SellTicketEvent; }
+        set { m_SellTicketEvent = value; }
+    }
 
-        ResetSellTimer();
-
+    private void Start()
+    {
         m_TicketsLeft = m_Tickets;
         FireChangeTicketEvent();
+
+        StartCoroutine(ComeBackRoutine(m_StandPosition.position));
     }
 
     protected override void Update()
@@ -65,12 +76,19 @@ public class CachierCharacter : Character
     private void SellTicket()
     {
         m_TicketsLeft -= 1;
+
+        if (m_SellTicketEvent != null)
+            m_SellTicketEvent(m_TicketsLeft);
+
         FireChangeTicketEvent();
+        foreach(ParticleSystem sys in CashMoneyEmitters) {
+            sys.Emit(5);
+        }
     }
 
-    private void ResetSellTimer()
+    public void ResetSellTimer()
     {
-        m_SellTimer = UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
+        m_SellTimer = m_MaxSellTime; //UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
     }
 
     private void FireChangeTicketEvent()
@@ -79,16 +97,27 @@ public class CachierCharacter : Character
             m_ChangeTicketEvent(m_TicketsLeft, m_Tickets);
     }
 
-    public void IncreaseSellTime(float time)
-    {
-        //Cheap fix 
-        m_SellTimer += time;
-    }
-
     protected override void ExecuteNegativeCommand()
     {
         base.ExecuteNegativeCommand();
         StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
+    }
+
+    private IEnumerator ComeBackRoutine(Vector3 position)
+    {
+        m_IsGone = true;
+
+        MoveToPosition(position);
+
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        m_IsGone = false;
+        ResetSellTimer();
+
+        yield return null;
     }
 
     private IEnumerator MoveAndComeBackRoutine(Vector3 position)
@@ -100,11 +129,22 @@ public class CachierCharacter : Character
         Vector3 oldPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         MoveToPosition(position);
 
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         yield return new WaitForSeconds(m_TimeGoneAfterHacked);
 
         MoveToPosition(oldPosition);
 
+        while (m_HasReachedDestination == false)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
         m_IsGone = false;
+        ResetSellTimer();
 
         yield return null;
     }

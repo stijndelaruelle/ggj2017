@@ -81,8 +81,14 @@ public class Character : MonoBehaviour
     }
 
     private float m_LerpTimer = 0.0f;
-    protected bool m_HasReachedDestination = false;
+    protected bool m_HasReachedDestination = true;
+    public bool HasReachedDestination
+    {
+        get { return m_HasReachedDestination; }
+    }
     private bool m_WasOnScreen = false;
+
+    private float m_OriginalScale = 1.0f;
 
     //Events
     private Action<Character> m_RunAwayEvent;
@@ -140,23 +146,30 @@ public class Character : MonoBehaviour
         m_SpawnPosition = transform.position;
         m_TargetPosition = transform.position;
         m_LastPosition = m_TargetPosition;
-    }
 
-    protected virtual void Start()
-    {
-        if (m_SkeletonAnimation.AnimationName == null)
-            UpdateAnimation("idle");
+        m_OriginalScale = 1.0f;
+        if (m_SkeletonAnimation != null)
+        {
+            m_OriginalScale = Mathf.Sign(m_SkeletonAnimation.transform.localScale.x);
+        }
     }
 
     protected virtual void Update()
     {
         UpdateMovement();
+        UpdateAnimation();
+        UpdateRotation();
+
         CheckIfInFrame();
     }
 
     private void UpdateMovement()
     {
-        m_HasReachedDestination = (m_LerpTimer >= 1.0f);
+        if (m_LastPosition == m_TargetPosition)
+        {
+            m_HasReachedDestination = true;
+            return;
+        }
 
         if (m_LerpTimer < 1.0f)
         {
@@ -165,29 +178,49 @@ public class Character : MonoBehaviour
             if (m_LerpTimer > 1.0f) { m_LerpTimer = 1.0f; }
 
             transform.position = Vector3.Lerp(m_LastPosition, m_TargetPosition, m_LerpTimer);
+            m_HasReachedDestination = false;
 
             //We finished walking
             if (m_LerpTimer >= 1.0f)
             {
                 m_LastPosition = m_TargetPosition;
-                UpdateAnimation("idle");
+                m_HasReachedDestination = true;
             }
         }
     }
 
-    private void UpdateAnimation(string name)
+    protected virtual void UpdateAnimation()
     {
-        m_SkeletonAnimation.AnimationName = name;
+        if (m_HasReachedDestination == false)
+        {
+            if (m_SkeletonAnimation.AnimationName != "walk")
+                m_SkeletonAnimation.AnimationName = "walk";
 
-        //Facing direction
-        Vector3 diff = m_TargetPosition - m_LastPosition;
-        float sign = Mathf.Sign(diff.x);
+            return;
+        }
 
-        Vector3 scale = m_SkeletonAnimation.transform.localScale;
-        m_SkeletonAnimation.transform.localScale = new Vector3(sign * scale.x, scale.y, scale.z);
+        if (m_SkeletonAnimation.AnimationName == null || m_SkeletonAnimation.AnimationName != "idle")
+        {
+            m_SkeletonAnimation.AnimationName = "idle";
+        }
     }
 
-    public void MoveToPositionSequentially(Vector3 position)
+    private void UpdateRotation()
+    {
+        //Facing direction
+        Vector3 diff = m_TargetPosition - m_LastPosition;
+        float sign = m_OriginalScale;
+
+        if (m_TargetPosition != m_LastPosition)
+        {
+            sign = Mathf.Sign(diff.x);
+        }
+
+        Vector3 scale = m_SkeletonAnimation.transform.localScale;
+        m_SkeletonAnimation.transform.localScale = new Vector3(sign, scale.y, scale.z);
+    }
+
+    public virtual void MoveToPositionSequentially(Vector3 position)
     {
         m_MoveSpeed *= 2.0f;
         StartCoroutine(MoveToPositionSequentiallyRoutine(position));
@@ -203,8 +236,6 @@ public class Character : MonoBehaviour
 
         float distance = (m_TargetPosition - m_LastPosition).magnitude;
         m_CurrentMoveSpeed = (m_MoveSpeed / distance);
-
-        UpdateAnimation("walk");
     }
 
     public void WarpToPosition(Vector3 position)
@@ -213,6 +244,7 @@ public class Character : MonoBehaviour
         m_LastPosition = m_TargetPosition;
 
         transform.position = position;
+        m_HasReachedDestination = true;
     }
 
     private void CheckIfInFrame()
