@@ -33,19 +33,10 @@ public class RandomCharacter : Character
         //Random gender
         m_Gender = (Gender)UnityEngine.Random.Range(0, 2);
 
-        //switch (m_Gender)
-        //{
-        //    case Gender.Male:
-        //        m_SpriteRenderer.color = Color.blue;
-        //        break;
-
-        //    case Gender.Female:
-        //        m_SpriteRenderer.color = Color.red;
-        //        break;
-
-        //    default:
-        //        break;
-        //}
+        if (m_Gender == Gender.Female)
+        {
+            transform.Rotate(0.0f, 0.0f, 180.0f);
+        }
     }
 
     protected override void ExecuteNegativeCommand()
