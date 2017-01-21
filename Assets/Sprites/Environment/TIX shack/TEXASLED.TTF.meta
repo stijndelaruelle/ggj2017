@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 88c76a89b1a325d448859c6d97c39bf7
+timeCreated: 1485038881
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Texas LED
+  fontNames:
+  - Texas LED
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

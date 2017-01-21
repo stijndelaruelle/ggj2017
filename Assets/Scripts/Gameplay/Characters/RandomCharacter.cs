@@ -95,6 +95,30 @@ public class RandomCharacter : Character
         UpdateCalling();
     }
 
+    protected override void UpdateAnimation()
+    {
+        if (m_HasReachedDestination == false)
+        {
+            if (m_SkeletonAnimation.AnimationName != "walk")
+                m_SkeletonAnimation.AnimationName = "walk";
+
+            return;
+        }
+
+        if (m_IsCalling == true)
+        {
+            if (m_SkeletonAnimation.AnimationName != "phonecall")
+                m_SkeletonAnimation.AnimationName = "phonecall";
+
+            return;
+        }
+
+        if (m_SkeletonAnimation.AnimationName == null || m_SkeletonAnimation.AnimationName != "idle")
+        {
+            m_SkeletonAnimation.AnimationName = "idle";
+        }
+    }
+
     private void UpdateWaitToCall()
     {
         //Waiting to call

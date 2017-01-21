@@ -44,10 +44,8 @@ public class CachierCharacter : Character
         set { m_SellTicketEvent = value; }
     }
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         m_TicketsLeft = m_Tickets;
         FireChangeTicketEvent();
 

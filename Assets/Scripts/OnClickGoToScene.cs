@@ -16,7 +16,7 @@ public class OnClickGoToScene : MonoBehaviour {
     void OnMouseUp() {
         if(transition) {
             Camera.main.gameObject.GetComponent<TransitionScript>().MoveCamera();
-            Invoke("ChangeScene", 0.25f);
+            Invoke("ChangeScene", 0.5f);
         }else ChangeScene(); 
     }
 
