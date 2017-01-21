@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Spine.Unity;
 
 public enum Gender
 {
@@ -21,6 +22,9 @@ public class Character : MonoBehaviour
     {
         get { return m_Width; }
     }
+
+    [SerializeField]
+    protected float m_VisualWidth;
 
     [SerializeField]
     protected float m_Frequency = -1;
@@ -51,7 +55,7 @@ public class Character : MonoBehaviour
     }
 
     [SerializeField]
-    protected SpriteRenderer m_SpriteRenderer;
+    protected SkeletonAnimation m_SkeletonAnimation;
 
     //Movement (will later all be calculated according to the width
     [Space(10)]
@@ -102,6 +106,11 @@ public class Character : MonoBehaviour
         m_TextBalloon.gameObject.SetActive(false);
     }
 
+    private void Start()
+    {
+        UpdateAnimation("idle");
+    }
+
     protected virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
@@ -129,8 +138,14 @@ public class Character : MonoBehaviour
             if (m_LerpTimer >= 1.0f)
             {
                 m_LastPosition = m_TargetPosition;
+                UpdateAnimation("idle");
             }
         }
+    }
+
+    private void UpdateAnimation(string name)
+    {
+        m_SkeletonAnimation.AnimationName = name;
     }
 
     private void UpdateTextBalloon()
@@ -181,6 +196,8 @@ public class Character : MonoBehaviour
 
         float distance = (m_TargetPosition - m_LastPosition).magnitude;
         m_CurrentMoveSpeed = (m_MoveSpeed / distance);
+
+        UpdateAnimation("walk");
     }
 
     public void WarpToPosition(Vector3 position)
@@ -199,7 +216,7 @@ public class Character : MonoBehaviour
     //Hacking feedback
     public void HalfHacked()
     {
-        m_TextBalloon.text = "Half hacked.";
+        m_TextBalloon.text = "Half.";
 
         if (m_TextBalloonActivateTimer == 0.0f)
             m_TextBalloonActivateTimer = m_TextBalloonActivateTime;
