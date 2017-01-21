@@ -29,6 +29,15 @@ public class Queue : MonoBehaviour
 
     [SerializeField]
     private Transform m_EndPosition;
+    
+    [Space(10)]
+    [Header("Game over windows")]
+    [Space(5)]
+    [SerializeField]
+    private GameObject GameoverWin;
+    [SerializeField]
+    private GameObject GameoverLoss;
+
     private List<Character> m_Characters;
     private List<RandomCharacter> m_RandomCharacters;
     private void Awake()
@@ -177,29 +186,45 @@ public class Queue : MonoBehaviour
 
         //Cheap fix
         m_Cachier.IncreaseSellTime(5.0f);
+        //The player is buying a ticket, he wins!
+        if (m_Characters[0] == m_Player)
+        {
+            Invoke("GameWin", 2f);
+            Debug.Log("PLAYER WINS");
+        }
     }
 
     private void OnChangeTickets(int tickets, int maxTickets)
     {
+        
+        //If this was the last ticket, the player loses
+        if (tickets == 0)
+        {
+            Debug.Log("PLAYER LOSES");
+            GameoverLoss.SetActive(true);
+            return;
+        }
+        //The player is buying a ticket, he wins!
+        if (m_Characters[0] == m_Player)
+        {
+            Invoke("GameWin", 2f);
+            Debug.Log("PLAYER WINS");
+            return;
+        }
+
+
         if (m_Characters == null || m_Characters.Count == 0)
             return;
 
         m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
 
-        if (m_Characters.Count <= 1)
-            return;
+        //if (m_Characters.Count < 1)
+         //   return;
 
-        //The player is buying a ticket, he wins!
-        if (m_Characters[1] == m_Player)
-        {
-            Debug.Log("PLAYER WINS");
-        }
+    }
 
-        //If this was the last ticket, the player loses
-        if (tickets == 0)
-        {
-            Debug.Log("PLAYER LOSES");
-        }
+    void GameWin() {
+            GameoverWin.SetActive(true);
     }
 
     //Calling events
