@@ -10,19 +10,24 @@ public class BrainwaveDevice : MonoBehaviour
     private int m_DeviceID = -1;
 
     [SerializeField]
-    private float m_CirclesToMax = 1;
-
-    [SerializeField]
     private float m_ErrorMargin;
 
     [SerializeField]
     private CharacterManager m_CharacterManager;
 
     private float m_Frequency;
-    private float m_PreviousFrequencyAngle;
+    private float m_FrequencyAngle;
+    public float FrequencyAngle
+    {
+        get { return m_FrequencyAngle; }
+    }
 
     private float m_Amplitude;
-    private float m_PreviousAmplitudeAngle;
+    private float m_AmplitudeAngle;
+    public float AmplitudeAngle
+    {
+        get { return m_AmplitudeAngle; }
+    }
 
     private float m_BrainPowerLeft;
     public float BrainPowerLeft
@@ -131,6 +136,8 @@ public class BrainwaveDevice : MonoBehaviour
         }
 
         float angle = Mathf.Atan2(newFrequencyVector.y, newFrequencyVector.x) * Mathf.Rad2Deg;
+        m_FrequencyAngle = angle;
+
         angle += 90.0f;
 
         if (angle < 0.0f)   { angle += 360.0f; }
@@ -172,6 +179,7 @@ public class BrainwaveDevice : MonoBehaviour
         }
 
         float angle = Mathf.Atan2(newAmplitudeVector.y, newAmplitudeVector.x) * Mathf.Rad2Deg;
+        m_AmplitudeAngle = angle;
         angle += 90.0f;
 
         if (angle < 0.0f) { angle += 360.0f; }
@@ -181,71 +189,6 @@ public class BrainwaveDevice : MonoBehaviour
         angle = 360.0f - angle;
 
         m_Amplitude = angle / 360.0f;
-    }
-
-    //Legacy
-    private void UpdateFrequencyTurning()
-    {
-        //Gather input
-        float newFrequencyX = m_InputManager.GetAxis("Frequency_X_" + m_DeviceID);
-        float newFrequencyY = m_InputManager.GetAxis("Frequency_Y_" + m_DeviceID);
-
-        Vector2 newFrequencyVector = new Vector2(newFrequencyX, newFrequencyY);
-        float distance = newFrequencyVector.magnitude;
-
-        if (distance < 0.5f)
-        {
-            m_Frequency = 0.0f;
-            return;
-        }
-
-        newFrequencyVector.Normalize();
-
-        float angle = Mathf.Atan2(newFrequencyVector.y, newFrequencyVector.x) * Mathf.Rad2Deg;
-        if (angle < 0.0f) { angle += 360.0f; }
-
-        float diffAngle = m_PreviousFrequencyAngle - angle;
-
-        //We probably made a turn
-        if (diffAngle < -350.0f) { diffAngle += 360.0f; }
-        if (diffAngle > 350.0f) { diffAngle -= 360.0f; }
-
-        m_Frequency += (diffAngle / 360) / m_CirclesToMax;
-        m_Frequency = Mathf.Clamp01(m_Frequency);
-
-        m_PreviousFrequencyAngle = angle;
-    }
-
-    private void UpdateAmplitudeTurning()
-    {
-        //Gather input
-        float newAmplitudeX = m_InputManager.GetAxis("Amplitude_X_" + m_DeviceID);
-        float newAmplitudeY = m_InputManager.GetAxis("Amplitude_Y_" + m_DeviceID);
-
-        Vector2 newAmplitudeVector = new Vector2(newAmplitudeX, newAmplitudeY);
-        float distance = newAmplitudeVector.magnitude;
-
-        if (distance < 0.5f)
-        {
-            m_Amplitude = 0.0f;
-            return;
-        }
-
-        newAmplitudeVector.Normalize();
-
-        float angle = Mathf.Atan2(newAmplitudeVector.y, newAmplitudeVector.x) * Mathf.Rad2Deg;
-        if (angle < 0.0f) { angle += 360.0f; }
-
-        float diffAngle = m_PreviousAmplitudeAngle - angle;
-
-        //We probably made a turn
-        if (diffAngle < -350.0f) { diffAngle += 360.0f; }
-        if (diffAngle > 350.0f) { diffAngle -= 360.0f; }
-
-        m_Amplitude += (diffAngle / 360) / m_CirclesToMax;
-        m_Amplitude = Mathf.Clamp01(m_Amplitude);
-
-        m_PreviousAmplitudeAngle = angle;
     }
 
     private void UpdateHacking()
