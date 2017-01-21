@@ -118,7 +118,7 @@ public class BrainwaveDevice : MonoBehaviour
 
         if (distance < 0.5f)
         {
-            m_Frequency = 0.0f;
+            m_Frequency = 0.5f;
             return;
         }
 
@@ -159,7 +159,7 @@ public class BrainwaveDevice : MonoBehaviour
 
         if (distance < 0.5f)
         {
-            m_Amplitude = 0.0f;
+            m_Amplitude = 0.5f;
             return;
         }
 
