@@ -9,7 +9,12 @@ public class Tweet
 
 	public Tweet(string contents)
 	{
+		//contents = ParseText.Utf16ToUtf8(contents);
+
 		Contents = contents;
-		ScrambledContents = contents.Shuffle();
+		ScrambledContents = ParseText.Utf16ToUtf8(ParseText.Shuffle(contents));
+
+		//Debug.Log(Contents);
+		//Debug.Log(ScrambledContents);
 	}
 }

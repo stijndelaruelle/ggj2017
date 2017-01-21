@@ -30,10 +30,10 @@ public class TwitterAPI : MonoBehaviour {
 		}
 	}
 
-	public void SearchTwitter(string keywords, Action<List<TweetSearchTwitterData> > callback) 
+	public void SearchTwitter(string keyword, Action<List<TweetSearchTwitterData> > callback) 
 	{	
 		PrepareOAuthData();
-		StartCoroutine(SearchTwitter_Coroutine(keywords, callback));
+		StartCoroutine(SearchTwitter_Coroutine(keyword, callback));
 	}
 
 	public void FindTrendsByLocationTwitter(string location, Action<List<TrendByLocationTwitterData> > callback) 
@@ -42,16 +42,16 @@ public class TwitterAPI : MonoBehaviour {
 		StartCoroutine(FindTrendsByLocation_Coroutine(location, callback));
 	}
 	
-	private IEnumerator SearchTwitter_Coroutine(string keywords, Action<List<TweetSearchTwitterData> > callback) 
+	private IEnumerator SearchTwitter_Coroutine(string keyword, Action<List<TweetSearchTwitterData> > callback) 
 	{
 		// Fix up hashes to be webfriendly
-		keywords = Uri.EscapeDataString(keywords);
+		keyword = Uri.EscapeDataString(keyword);
 
 		string twitterUrl = "https://api.twitter.com/1.1/search/tweets.json";
 		
 		SortedDictionary<string, string> twitterParamsDictionary = new SortedDictionary<string, string>
         {
-            {"q", keywords},
+            {"q", keyword},
 			{"count", "100"},
 			{"result_type", "popular"},
 		};
@@ -59,11 +59,11 @@ public class TwitterAPI : MonoBehaviour {
 		WWW query = CreateTwitterAPIQuery(twitterUrl, twitterParamsDictionary);
 		yield return query;
 
-		callback(ParseResultsFromSearchTwitter(query.text));
+		callback(ParseResultsFromSearchTwitter(query.text, keyword));
 	}
 
 	// Use of MINI JSON http://forum.unity3d.com/threads/35484-MiniJSON-script-for-parsing-JSON-data
-	private List<TweetSearchTwitterData> ParseResultsFromSearchTwitter(string jsonResults) {
+	private List<TweetSearchTwitterData> ParseResultsFromSearchTwitter(string jsonResults, string hashTag) {
 		//Debug.Log(jsonResults);
 		
 		List<TweetSearchTwitterData> twitterDataList = new List<TweetSearchTwitterData>();
@@ -78,6 +78,8 @@ public class TwitterAPI : MonoBehaviour {
 			twitterData.screenName = userInfo["screen_name"] as string;
 			twitterData.retweetCount = (Int64)tweet["retweet_count"];
 			twitterData.profileImageUrl = userInfo["profile_image_url"] as string;
+
+			twitterData.hashtag = hashTag;
 			
 			twitterDataList.Add(twitterData);
 		} 

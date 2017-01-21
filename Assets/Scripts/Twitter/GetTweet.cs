@@ -6,15 +6,6 @@ public class GetTweet : MonoBehaviour
 {
 	#region Inspector Fields
 	[SerializeField]
-	private bool _removeURLs;
-
-	[SerializeField]
-	private bool _removeUsernames;
-
-	[SerializeField]
-	private bool _removeHashtags;
-
-	[SerializeField]
 	private string _hashtag = "#GGJ17";
 	#endregion
 
@@ -23,32 +14,19 @@ public class GetTweet : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		TwitterAPI.instance.SearchTwitter(_hashtag, GetRandomTweetCallBack);
+
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		if(Input.GetKeyUp(KeyCode.Space))
+		{
+			Tweet requestedTweet = Twitter.Instance.GetHashTag(_hashtag).GetRandomTweet();
 
+			Debug.Log(requestedTweet.ScrambledContents);
+			Debug.Log(requestedTweet.Contents);
+		}
 	}
 	#endregion
-
-	void GetRandomTweetCallBack(List<TweetSearchTwitterData> tweetList)
-	{
-		TweetSearchTwitterData randomTweetData = tweetList[Random.Range(0, tweetList.Count)];
-
-		string tweetText = randomTweetData.tweetText;
-
-		if (_removeURLs)
-			tweetText = ParseText.RemoveURLs(tweetText);
-		if (_removeUsernames)
-			tweetText = ParseText.RemoveUsernames(tweetText);
-		if (_removeHashtags)
-			tweetText = ParseText.RemoveHashtags(tweetText);
-
-		Tweet randomTweet = new Tweet(tweetText);
-
-		Debug.Log("Random tweet scrambled: " + randomTweet.ScrambledContents);
-		Debug.Log("Random tweet: " + randomTweet.Contents);
-	}
 }
