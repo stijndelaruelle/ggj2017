@@ -43,7 +43,7 @@ public class Queue : MonoBehaviour
     private void Awake()
     {
         //Subscribe to the cachier events
-        m_Cachier.SellTicketEvent += OnSellTicket;
+        m_Cachier.ChangeTicketsEvent += OnChangeTickets;
     }
 
     private void Start()
@@ -83,7 +83,7 @@ public class Queue : MonoBehaviour
 
         if (m_Cachier != null)
         {
-            m_Cachier.SellTicketEvent -= OnSellTicket;
+            m_Cachier.ChangeTicketsEvent -= OnChangeTickets;
         }
 
         if (m_RandomCharacters != null)
@@ -194,11 +194,11 @@ public class Queue : MonoBehaviour
         }
     }
 
-    private void OnSellTicket(int ticketsLeft)
+    private void OnChangeTickets(int tickets, int maxTickets)
     {
         
         //If this was the last ticket, the player loses
-        if (ticketsLeft == 0)
+        if (tickets == 0)
         {
             Debug.Log("PLAYER LOSES");
             GameoverLoss.SetActive(true);

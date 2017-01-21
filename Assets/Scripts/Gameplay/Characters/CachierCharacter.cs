@@ -23,22 +23,12 @@ public class CachierCharacter : Character
     private float m_TimeGoneAfterHacked = 2;
     private bool m_IsGone = false;
 
-    [SerializeField]
-    private Transform m_StandPosition;
-
     //Events
     private Action<int, int> m_ChangeTicketEvent;
     public Action<int, int> ChangeTicketsEvent
     {
         get { return m_ChangeTicketEvent; }
         set { m_ChangeTicketEvent = value; }
-    }
-
-    private Action<int> m_SellTicketEvent;
-    public Action<int> SellTicketEvent
-    {
-        get { return m_SellTicketEvent; }
-        set { m_SellTicketEvent = value; }
     }
 
     protected override void Start()
@@ -49,8 +39,6 @@ public class CachierCharacter : Character
 
         m_TicketsLeft = m_Tickets;
         FireChangeTicketEvent();
-
-        MoveToPosition(m_StandPosition.position);
     }
 
     protected override void Update()
@@ -77,10 +65,6 @@ public class CachierCharacter : Character
     private void SellTicket()
     {
         m_TicketsLeft -= 1;
-
-        if (m_SellTicketEvent != null)
-            m_SellTicketEvent(m_TicketsLeft);
-
         FireChangeTicketEvent();
     }
 

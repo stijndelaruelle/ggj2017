@@ -152,9 +152,6 @@ public class RandomCharacter : Character
     {
         base.ExecuteNegativeCommand();
         CancelCalling();
-
-        m_MoveSpeed *= 3.0f;
-        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
     private void RandomizeCharacter()
