@@ -26,6 +26,9 @@ public class CachierCharacter : Character
     [SerializeField]
     private Transform m_StandPosition;
 
+    [SerializeField]
+    List<ParticleSystem> CashMoneyEmitters = new List<ParticleSystem>();
+
     //Events
     private Action<int, int> m_ChangeTicketEvent;
     public Action<int, int> ChangeTicketsEvent
@@ -82,6 +85,9 @@ public class CachierCharacter : Character
             m_SellTicketEvent(m_TicketsLeft);
 
         FireChangeTicketEvent();
+        foreach(ParticleSystem sys in CashMoneyEmitters) {
+            sys.Emit(5);
+        }
     }
 
     private void ResetSellTimer()
