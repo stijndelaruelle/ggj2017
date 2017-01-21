@@ -15,8 +15,7 @@ public class Twitter : MonoBehaviour
 	//[SerializeField]
 	//private bool _removeHashtags;
 
-	[SerializeField]
-	private List<string> _hashtags = new List<string>();
+	public List<string> Hashtags = new List<string>();
 	#endregion
 
 	#region Properties
@@ -42,9 +41,9 @@ public class Twitter : MonoBehaviour
 	private void Start()
 	{
 		// Cache the needed hashtags.
-		for (int i = 0; i < _hashtags.Count; i++)
+		for (int i = 0; i < Hashtags.Count; i++)
 		{
-			RequestPopularTweets(_hashtags[i]);
+			RequestPopularTweets(Hashtags[i]);
 		}
 	}
 	#endregion
@@ -79,5 +78,16 @@ public class Twitter : MonoBehaviour
 			Debug.LogWarning("No hashtag found.");
 
 		return hashTagToFind;
+	}
+
+	public HashtagList RandomHashTag()
+	{
+		if(_hashTagLists.Count == 0)
+		{
+			Debug.LogWarning("No hash tag lists found!", this);
+			return null;
+		}
+
+		return _hashTagLists[Random.Range(0, _hashTagLists.Count)];
 	}
 }
