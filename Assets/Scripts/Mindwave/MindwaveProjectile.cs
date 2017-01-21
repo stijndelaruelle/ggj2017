@@ -13,9 +13,10 @@ public class MindwaveProjectile : MonoBehaviour {
     bool DistanceBasedFrequency;
     static Transform TargetTransform;
     bool FollowObject;
+    float TargetHeightOffset;
     
 
-    public void Initialize(Transform targetTransform, float speed, float phase2height, float freq, float amp, bool distancebasedfreq, bool followObj) {
+    public void Initialize(Transform targetTransform, float speed, float phase2height, float freq, float amp, bool distancebasedfreq, bool followObj, float targetHeightOffset) {
         //receive the information needed to create the path
         TargetPos = targetTransform.position;
         FollowObject = followObj;
@@ -25,6 +26,7 @@ public class MindwaveProjectile : MonoBehaviour {
         Amplitude = amp;
         Frequency = freq;
         DistanceBasedFrequency = distancebasedfreq;
+        TargetHeightOffset = targetHeightOffset;
         
         //calculate time it should take
         TravelTime = Vector3.Distance(TargetPos, transform.position)/speed;
@@ -70,7 +72,7 @@ public class MindwaveProjectile : MonoBehaviour {
             //phase three
             //move downwards + toward target
             //15%
-            pos.y +=  Phase2height-Phase2height * ((travelPercentage-0.85f)/0.15f); 
+            pos.y +=  Phase2height-Phase2height * ((travelPercentage-0.85f)/0.15f)+TargetHeightOffset; 
 
         }
 
