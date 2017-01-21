@@ -45,7 +45,7 @@ public class Queue : MonoBehaviour
         //Spawn characters
         for (int i = 0; i < m_NumberOfCharacters; ++i)
         {
-            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition);
+            Character character = m_CharacterManager.SpawnRandomCharacterAtPosition(m_StartPosition.position);
             if (character != null) { Insert(m_Characters.Count, character, true); }
         }
 
