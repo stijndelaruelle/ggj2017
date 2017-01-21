@@ -11,10 +11,19 @@ public enum Gender
     Female
 }
 
+public enum BodyType
+{
+    Small,
+    Big
+}
+
 public class Character : MonoBehaviour
 {
     [SerializeField]
     protected Gender m_Gender;
+
+    [SerializeField]
+    protected BodyType m_BodyType;
 
     [SerializeField]
     protected float m_Width;
@@ -312,17 +321,29 @@ public class Character : MonoBehaviour
     {
         //Frequency is dependant on the width
         //Big characters have a lower range than thin characters
-        m_Frequency = UnityEngine.Random.Range(0.05f, 1.0f);
+        switch (m_BodyType)
+        {
+            case BodyType.Small:
+                m_Frequency = UnityEngine.Random.Range(0.05f, 0.45f);
+                break;
+
+            case BodyType.Big:
+                m_Frequency = UnityEngine.Random.Range(0.55f, 0.95f);
+                break;
+
+            default:
+                break;
+        }
 
         //Amplitude is dependent on the gender
         switch (m_Gender)
         {
             case Gender.Male:
-                m_Amplitude = UnityEngine.Random.Range(0.05f, 0.49f);
+                m_Amplitude = UnityEngine.Random.Range(0.05f, 0.45f);
                 break;
 
             case Gender.Female:
-                m_Amplitude = UnityEngine.Random.Range(0.51f, 0.95f);
+                m_Amplitude = UnityEngine.Random.Range(0.55f, 0.95f);
                 break;
 
             default:
