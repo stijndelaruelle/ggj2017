@@ -66,7 +66,7 @@ public class MindwaveProjectile : MonoBehaviour {
             //60%
 
             //calculate a sine wave based on the provided frequency and amplitude
-            pos.y = Mathf.Sin(Frequency*travelPercentage) * Amplitude + Phase2height;
+            pos.y = Mathf.Sin(Frequency*travelPercentage) * Amplitude + Phase2height + StartPos.y;
 
         }else {
             //phase three

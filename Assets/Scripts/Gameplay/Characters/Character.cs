@@ -88,6 +88,8 @@ public class Character : MonoBehaviour
     }
     private bool m_WasOnScreen = false;
 
+    private float m_OriginalScale = 1.0f;
+
     //Events
     private Action<Character> m_RunAwayEvent;
     public Action<Character> RunAwayEvent
@@ -144,6 +146,12 @@ public class Character : MonoBehaviour
         m_SpawnPosition = transform.position;
         m_TargetPosition = transform.position;
         m_LastPosition = m_TargetPosition;
+
+        m_OriginalScale = 1.0f;
+        if (m_SkeletonAnimation != null)
+        {
+            m_OriginalScale = Mathf.Sign(m_SkeletonAnimation.transform.localScale.x);
+        }
     }
 
     protected virtual void Start()
@@ -185,15 +193,15 @@ public class Character : MonoBehaviour
 
         //Facing direction
         Vector3 diff = m_TargetPosition - m_LastPosition;
-        float sign = 1.0f;
+        float sign = m_OriginalScale;
 
         if (m_TargetPosition != m_LastPosition)
         {
-            Mathf.Sign(diff.x);
+            sign = Mathf.Sign(diff.x);
         }
 
         Vector3 scale = m_SkeletonAnimation.transform.localScale;
-        m_SkeletonAnimation.transform.localScale = new Vector3(sign * scale.x, scale.y, scale.z);
+        m_SkeletonAnimation.transform.localScale = new Vector3(sign, scale.y, scale.z);
     }
 
     public virtual void MoveToPositionSequentially(Vector3 position)

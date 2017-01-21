@@ -106,7 +106,7 @@ public class RandomCharacter : Character
             if (m_StartCallingEvent != null)
                 m_StartCallingEvent();
 
-            transform.Rotate(0.0f, 0.0f, 180.0f);
+            //transform.Rotate(0.0f, 0.0f, 180.0f);
         }
     }
 
@@ -152,6 +152,9 @@ public class RandomCharacter : Character
     {
         base.ExecuteNegativeCommand();
         CancelCalling();
+
+        m_MoveSpeed *= 3.0f;
+        StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
     private void RandomizeCharacter()
