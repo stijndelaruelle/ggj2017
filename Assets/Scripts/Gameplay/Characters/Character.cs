@@ -306,26 +306,21 @@ public class Character : MonoBehaviour
     {
         //Frequency is dependant on the width
         //Big characters have a lower range than thin characters
-
         m_Frequency = UnityEngine.Random.Range(0.05f, 1.0f);
 
-        //Amplitude is dependant on the gender
-        float minRadius = 0.05f;
-        float maxRange = 0.95f;
-
+        //Amplitude is dependent on the gender
         switch (m_Gender)
         {
             case Gender.Male:
-
+                m_Amplitude = UnityEngine.Random.Range(0.05f, 0.49f);
                 break;
 
             case Gender.Female:
+                m_Amplitude = UnityEngine.Random.Range(0.51f, 0.95f);
                 break;
 
             default:
                 break;
         }
-
-        m_Amplitude = UnityEngine.Random.Range(0.05f, 1.0f);
     }
 }
