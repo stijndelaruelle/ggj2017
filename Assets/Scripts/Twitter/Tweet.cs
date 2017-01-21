@@ -14,7 +14,7 @@ public class Tweet
 		Contents = contents;
 		ScrambledContents = ParseText.Utf16ToUtf8(ParseText.Shuffle(contents));
 
-		Debug.Log(Contents);
-		Debug.Log(ScrambledContents);
+		//Debug.Log(Contents);
+		//Debug.Log(ScrambledContents);
 	}
 }

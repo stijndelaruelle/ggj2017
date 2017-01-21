@@ -76,6 +76,9 @@ public class BrainwaveDevice : MonoBehaviour
     //Cache
     private InputManager m_InputManager;
 
+	// Approximation
+	public float MinimalDifference = 1;
+
 
     private void Start()
     {
@@ -199,7 +202,11 @@ public class BrainwaveDevice : MonoBehaviour
         //Get all the characters
         List<Character> characters = m_CharacterManager.Characters;
 
-        foreach (Character character in characters)
+		// Reset the minimal difference.
+		MinimalDifference = 1;
+
+
+		foreach (Character character in characters)
         {
             if (character.gameObject == this.gameObject)
             {
@@ -244,7 +251,15 @@ public class BrainwaveDevice : MonoBehaviour
             {
                 character.NotHacked();
             }
-        }
+
+			// Get difference in amplitude and frequency with character.
+			float difference = Mathf.Abs(m_Frequency - character.Frequency) + Mathf.Abs(m_Amplitude - character.Amplitude);
+
+			if (difference < MinimalDifference)
+				MinimalDifference = difference;
+		}
+
+		//Debug.Log("Smallest difference: " + m_MinimalDifference);
 
         if (m_UpdateTargetEvent != null)
             m_UpdateTargetEvent(m_Target);
