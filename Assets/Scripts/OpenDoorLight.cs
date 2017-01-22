@@ -6,9 +6,8 @@ using UnityEngine;
 public class OpenDoorLight : MonoBehaviour
 {
 	#region Inspector Fields
-	[Space]
 	[SerializeField]
-	private float _transitionDuration = .5f;
+	private float _transitionDuration = 1f;
 
 	[SerializeField]
 	private float _openDoorDuration = 5;
@@ -24,6 +23,7 @@ public class OpenDoorLight : MonoBehaviour
 	void Start ()
 	{
 		_spriteRenderer = GetComponent<SpriteRenderer>();
+		_spriteRenderer.enabled = false;
 
 		CharacterManager.OnCharacterEnterConcert += OpenDoor;
 	}
@@ -45,9 +45,6 @@ public class OpenDoorLight : MonoBehaviour
 			_openTime += _openDoorDuration;
 		else
 		{
-			// Open Door.
-			_spriteRenderer.enabled = true;
-
 			_openTime += _openDoorDuration;
 
 			// Start timer.
@@ -59,6 +56,11 @@ public class OpenDoorLight : MonoBehaviour
 
 	IEnumerator OpenDoorCoroutine()
 	{
+		yield return new WaitForSeconds(_transitionDuration);
+
+		// Open Door.
+		_spriteRenderer.enabled = true;
+
 		while (_openTime > 0)
 		{
 			_openTime -= Time.deltaTime;
