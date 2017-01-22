@@ -213,14 +213,16 @@ public class Queue : MonoBehaviour
         {
             Debug.Log("PLAYER LOSES");
             GameoverLoss.SetActive(true);
-            return;
+			MusicPlayer.Instance.TransitionToLose();
+			return;
         }
         //The player is buying a ticket, he wins!
         if (m_Characters[0] == m_Player)
         {
             Invoke("GameWin", 2f);
             Debug.Log("PLAYER WINS");
-            return;
+			MusicPlayer.Instance.TransitionToVictory();
+			return;
         }
 
 
@@ -233,7 +235,6 @@ public class Queue : MonoBehaviour
 
     private void GameWin()
     {
-		MusicPlayer.Instance.TransitionToVictory();
         GameoverWin.SetActive(true);
     }
 
