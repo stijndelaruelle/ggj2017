@@ -233,6 +233,7 @@ public class Queue : MonoBehaviour
 
     private void GameWin()
     {
+		MusicPlayer.Instance.TransitionToVictory();
         GameoverWin.SetActive(true);
     }
 
