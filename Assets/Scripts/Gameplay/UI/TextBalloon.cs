@@ -102,7 +102,13 @@ public class TextBalloon : MonoBehaviour
             return;
 
 		if(m_CharacterTweet == null)
-			m_CharacterTweet = Twitter.Instance.GetRandomHashTag().GetRandomTweet();
+        {
+            if (Twitter.Instance != null)
+            {
+                m_CharacterTweet = Twitter.Instance.GetRandomHashTag().GetRandomTweet();
+            }
+        }
+
 
         if (m_ScrambleTimer < 0.0f)
         {

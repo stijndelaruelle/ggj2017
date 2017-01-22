@@ -18,6 +18,10 @@ public class CachierCharacter : Character
     private float m_SellTimer;
     private int m_TicketsLeft = 1;
     private bool m_IsGone = false;
+    public bool IsGone
+    {
+        get { return m_IsGone; }
+    }
 
     [SerializeField]
     private Transform m_StandPosition;
