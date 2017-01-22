@@ -11,7 +11,7 @@ public class CashierProgressLamps : MonoBehaviour {
 
         int amountOn = (int)((1- cachier.GetNormalizedSellTimer()) * Lamps.Count);
 
-        Debug.Log("Lamps on "+amountOn);
+        //Debug.Log("Lamps on "+amountOn);
 
         for(int i=0;i<Lamps.Count;i++) {
             if(i<=amountOn)
