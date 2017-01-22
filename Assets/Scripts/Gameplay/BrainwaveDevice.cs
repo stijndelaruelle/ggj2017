@@ -253,7 +253,7 @@ public class BrainwaveDevice : MonoBehaviour
 				if (HackedEvent != null)
 					HackedEvent();
 
-                leftVibration = 0.5f;
+				leftVibration = 0.5f;
                 rightVibration = 0.5f;
             }
 
@@ -307,7 +307,13 @@ public class BrainwaveDevice : MonoBehaviour
         if (useLeftBrainPower == true || useRightBrainPower == true)
         {
             m_Target.SendBrainCommand(useLeftBrainPower, useRightBrainPower);
-        }
+
+			// Play hacked sound.
+			if (SoundPlayer.Instance != null)
+				SoundPlayer.Instance.FullyHacked.Play();
+			else
+				Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
+		}
 
         ControllerInput.SetVibration(m_DeviceID, leftVibration, rightVibration, 0.5f);
     }

@@ -7,9 +7,16 @@ public class CashierProgressLamps : MonoBehaviour {
 	[SerializeField] CachierCharacter cachier;
     [SerializeField] List<SpriteRenderer> Lamps = new List<SpriteRenderer>();
     [SerializeField] Sprite LampOn, LampOff;
-    void Update() {
 
-        int amountOn = (int)((1- cachier.GetNormalizedSellTimer()) * Lamps.Count);
+    void Update()
+    {
+        if (cachier.IsGone)
+        {
+            for (int i = 0; i < Lamps.Count; i++) { Lamps[i].sprite = LampOff; }
+            return;
+        }
+
+        int amountOn = Mathf.FloorToInt((1.0f - cachier.GetNormalizedSellTimer()) * Lamps.Count);
 
         //Debug.Log("Lamps on "+amountOn);
 

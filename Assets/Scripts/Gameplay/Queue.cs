@@ -226,8 +226,14 @@ public class Queue : MonoBehaviour
 
         m_Characters[0].BuyTicket(m_EndPosition.position);
 
-        //The player is buying a ticket, he wins!
-        if (m_Characters[0] == m_Player)
+		// Play ticket sold sound.
+		if (SoundPlayer.Instance != null)
+			SoundPlayer.Instance.TicketSold.Play();
+		else
+			Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
+
+		//The player is buying a ticket, he wins!
+		if (m_Characters[0] == m_Player)
         {
             Invoke("GameWin", 2f);
             Debug.Log("PLAYER WINS");
@@ -308,20 +314,18 @@ public class Queue : MonoBehaviour
         //All characters have to move forwards
         List<Vector3> targetPositions = new List<Vector3>();
 
-        for (int i = m_Characters.Count - 1; i >= position; --i)
-        {
-            Vector3 targetPosition = oldCharacter.GamePosition;
-            if (i > 0)
-            {
-                targetPosition = m_Characters[i - 1].GamePosition;
-            }
+        //Collect all the positions
+        targetPositions.Add(oldCharacter.GamePosition);
 
-            targetPositions.Add(targetPosition);
+        for (int i = position + 1; i < m_Characters.Count; ++i)
+        {
+            targetPositions.Add(m_Characters[i - 1].GamePosition);
         }
 
+        //Move the characters to the positions
         for (int i = position; i < m_Characters.Count; ++i)
         {
-            m_Characters[i].MoveToPosition(targetPositions[targetPositions.Count - i - 1]);
+            m_Characters[i].MoveToPosition(targetPositions[i - position]);
 
             float randTime = UnityEngine.Random.Range(0.1f, 0.5f);
             yield return new WaitForSeconds(randTime);
