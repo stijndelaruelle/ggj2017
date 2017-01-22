@@ -112,6 +112,12 @@ namespace Sjabloon
 
         private Dictionary<string, AxisInputCommand> m_AxisInputCommands;
         private Dictionary<string, ButtonInputCommand> m_ButtonInputCommands;
+        private bool m_DisableInput;
+        public bool DisableInput
+        {
+            get { return m_DisableInput; }
+            set { m_DisableInput = value; }
+        }
 
         protected override void Awake()
         {
@@ -217,6 +223,9 @@ namespace Sjabloon
 
         public bool GetButton(string name)
         {
+            if (m_DisableInput)
+                return false;
+
             if (m_ButtonInputCommands.ContainsKey(name))
             {
                 ButtonInputCommand inputCommand = m_ButtonInputCommands[name];
@@ -276,6 +285,9 @@ namespace Sjabloon
 
         public float GetAxis(string name)
         {
+            if (m_DisableInput)
+                return 0.0f;
+            
             if (m_AxisInputCommands.ContainsKey(name))
             {
                 AxisInputCommand inputCommand = m_AxisInputCommands[name];

@@ -25,8 +25,8 @@ public class SwitchAudioTrack : MonoBehaviour
     {
         m_InputManager = InputManager.Instance;
 
-        m_InputManager.BindButton("Controller_ChangeAudio_" + clip.name, 0, m_ButtonCode, InputManager.ButtonState.Pressed);
-        m_InputManager.BindButton("Keyboard_ChangeAudio_" + clip.name, m_KeyCode, InputManager.ButtonState.Pressed);
+        m_InputManager.BindButton("Controller_ChangeAudio_" + clip.name, 0, m_ButtonCode, InputManager.ButtonState.OnPress);
+        m_InputManager.BindButton("Keyboard_ChangeAudio_" + clip.name, m_KeyCode, InputManager.ButtonState.OnPress);
     }
 
     private void OnDestroy()
