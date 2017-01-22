@@ -388,9 +388,6 @@ public class XboxController
 
     public void SetVibration(float leftValue, float rightValue, float time)
     {
-        if (time <= 0.0f)
-            return;
-
         m_RumbleTimeLeft = time;
         GamePad.SetVibration(m_ControllerIndex, leftValue, rightValue);
     }

@@ -100,6 +100,11 @@ public class BrainwaveDevice : MonoBehaviour
         m_InputManager.BindAxis("BrainPowerRight_" + m_DeviceID, m_DeviceID, ControllerAxisCode.RightTrigger);
     }
 
+    private void OnDestroy()
+    {
+        ControllerInput.SetVibration(m_DeviceID, 0.0f, 0.0f, 0.0f);
+    }
+
     private void Update()
     {
         if (m_DeviceID == -1)
@@ -211,6 +216,8 @@ public class BrainwaveDevice : MonoBehaviour
 		// Reset the minimal difference.
 		MinimalDifference = 1;
 
+        float leftVibration = 0.0f;
+        float rightVibration = 0.0f;
 
 		foreach (Character character in characters)
         {
@@ -225,6 +232,7 @@ public class BrainwaveDevice : MonoBehaviour
                 character.Frequency < (m_Frequency + m_ErrorMargin))
             {
                 frequencyHacked = true;
+                leftVibration = 0.25f;
             }
 
             //Compare amplitude
@@ -233,6 +241,7 @@ public class BrainwaveDevice : MonoBehaviour
                 character.Amplitude < (m_Amplitude + m_ErrorMargin))
             {
                 amplitudeHacked = true;
+                rightVibration = 0.25f;
             }
 
             //We hacked a character!
@@ -244,10 +253,8 @@ public class BrainwaveDevice : MonoBehaviour
 				if (HackedEvent != null)
 					HackedEvent();
 
-                //if (m_UpdateTargetEvent != null)
-                //    m_UpdateTargetEvent(m_Target);
-
-                //return;
+                leftVibration = 0.5f;
+                rightVibration = 0.5f;
             }
 
             //Almost there, give feedback!
@@ -275,6 +282,8 @@ public class BrainwaveDevice : MonoBehaviour
 
         if (m_UpdateTargetEvent != null)
             m_UpdateTargetEvent(m_Target);
+
+        ControllerInput.SetVibration(m_DeviceID, leftVibration, rightVibration, 0.5f);
     }
 
     private void UpdateCommand()
@@ -289,6 +298,9 @@ public class BrainwaveDevice : MonoBehaviour
         if (m_Target == null)
             return;
 
+        float leftVibration = Mathf.Clamp01(0.5f + (m_BrainPowerLeft * 0.5f));
+        float rightVibration = Mathf.Clamp01(0.5f + (m_BrainPowerRight * 0.5f));
+
         bool useLeftBrainPower = (m_BrainPowerLeft >= 1.0f && (m_BrainPowerLeft != m_PrevBrainPowerLeft));
         bool useRightBrainPower = (m_BrainPowerRight >= 1.0f && (m_BrainPowerRight != m_PrevBrainPowerRight));
 
@@ -296,5 +308,7 @@ public class BrainwaveDevice : MonoBehaviour
         {
             m_Target.SendBrainCommand(useLeftBrainPower, useRightBrainPower);
         }
+
+        ControllerInput.SetVibration(m_DeviceID, leftVibration, rightVibration, 0.5f);
     }
 }
