@@ -11,6 +11,12 @@ public class TicketCounter : MonoBehaviour
     [SerializeField]
     private Text m_Text;
 
+    [SerializeField]
+    private GameObject m_GreenBackground;
+
+    [SerializeField]
+    private GameObject m_RedBackground;
+
     private void Awake()
     {
         //Subscribe to the cachier events
@@ -25,6 +31,13 @@ public class TicketCounter : MonoBehaviour
 
     private void OnChangeTickets(int ticket, int maxTickets)
     {
-        m_Text.text = ticket + " / " + maxTickets;
+        m_Text.text = ticket.ToString();
+
+        //Calculate percentage, less than 40% = red
+        float percentage = ((float)ticket / (float)maxTickets);
+        bool lightRed = (percentage <= 0.4f);
+
+        m_GreenBackground.SetActive(!lightRed);
+        m_RedBackground.SetActive(lightRed);
     }
 }
