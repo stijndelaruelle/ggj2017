@@ -15,6 +15,9 @@ public class MusicPlayer : MonoBehaviour
 	[SerializeField]
 	private AudioMixerSnapshot _victory;
 
+	[SerializeField]
+	private AudioMixerSnapshot _muted;
+
 	[Space]
 	[SerializeField]
 	private AudioSource _victorySource;
@@ -56,7 +59,7 @@ public class MusicPlayer : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		
+		_muffled.TransitionTo(1);
 	}
 	
 	// Update is called once per frame
