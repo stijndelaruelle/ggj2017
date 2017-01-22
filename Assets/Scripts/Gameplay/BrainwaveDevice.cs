@@ -77,6 +77,8 @@ public class BrainwaveDevice : MonoBehaviour
         set { m_UpdateTargetEvent = value; }
     }
 
+	public Action HackedEvent;
+
     //Cache
     private InputManager m_InputManager;
 
@@ -239,6 +241,9 @@ public class BrainwaveDevice : MonoBehaviour
                 character.FullyHacked();
                 m_Target = character;
 
+				if (HackedEvent != null)
+					HackedEvent();
+
                 //if (m_UpdateTargetEvent != null)
                 //    m_UpdateTargetEvent(m_Target);
 
@@ -249,7 +254,10 @@ public class BrainwaveDevice : MonoBehaviour
             else if (frequencyHacked || amplitudeHacked)
             {
                 character.HalfHacked();
-            }
+
+				if (HackedEvent != null)
+					HackedEvent();
+			}
 
             else
             {
