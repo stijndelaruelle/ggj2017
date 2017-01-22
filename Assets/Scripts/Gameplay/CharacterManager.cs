@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Sjabloon;
+using System;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class CharacterManager : MonoBehaviour
     {
         get { return m_Characters; }
     }
+
+	public static Action OnCharacterEnterConcert;
 
     private void Awake()
     {
@@ -87,7 +90,12 @@ public class CharacterManager : MonoBehaviour
 
     private void OnCharacterDestroy(Character character)
     {
-		MusicPlayer.Instance.OpenDoor();
+		if (character.transform.position.x > 0)
+		{
+			if(OnCharacterEnterConcert != null)
+				OnCharacterEnterConcert();
+		}
+			
 
         character.DestroyEvent -= OnCharacterDestroy;
         m_Characters.Remove(character);

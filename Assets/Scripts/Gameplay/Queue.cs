@@ -314,8 +314,8 @@ public class Queue : MonoBehaviour
         m_RandomCharacters.Add(friendCharacter);
     }
 
-	//public bool ContainsCharacter(Character character)
-	//{
-
-	//}
+	public bool ContainsCharacter(Character character)
+	{
+		return m_Characters.Contains(character);
+	}
 }

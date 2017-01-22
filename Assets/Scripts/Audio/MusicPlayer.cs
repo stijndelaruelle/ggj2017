@@ -32,6 +32,8 @@ public class MusicPlayer : MonoBehaviour
 	{
 		if (Instance == null)
 			Instance = this;
+
+		CharacterManager.OnCharacterEnterConcert += OpenDoor;
 	}
 
 	// Use this for initialization
@@ -50,10 +52,13 @@ public class MusicPlayer : MonoBehaviour
 			TransitionToMuffled();
 	}
 
+	private void OnDisable()
+	{
+		CharacterManager.OnCharacterEnterConcert -= OpenDoor;
+	}
+
 	public void OpenDoor()
 	{
-		Debug.Log("Opening door.");
-
 		if (_openTime > 0)
 			_openTime += _openDoorDuration;
 		else
@@ -91,6 +96,6 @@ public class MusicPlayer : MonoBehaviour
 
 	void TransitionToMuffled()
 	{
-		_muffled.TransitionTo(_transitionDuration);
+		_muffled.TransitionTo(_transitionDuration * 2);
 	}
 }
