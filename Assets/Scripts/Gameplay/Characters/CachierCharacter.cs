@@ -120,6 +120,7 @@ public class CachierCharacter : Character
 
     protected override void ExecuteNegativeCommand()
     {
+        if(m_IsGone) return;
         base.ExecuteNegativeCommand();
         StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
     }
