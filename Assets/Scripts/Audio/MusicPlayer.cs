@@ -24,6 +24,10 @@ public class MusicPlayer : MonoBehaviour
 
 	[Space]
 	[SerializeField]
+	private AudioSource _loseSource;
+
+	[Space]
+	[SerializeField]
 	private float _transitionDuration = .5f;
 
 	[SerializeField]
@@ -37,7 +41,7 @@ public class MusicPlayer : MonoBehaviour
 	#region Fields
 	private float _openTime = 0;
 
-	private bool _gameWon = false;
+	private bool _gameEnd = false;
 	#endregion
 
 
@@ -72,7 +76,7 @@ public class MusicPlayer : MonoBehaviour
 
 	public void OpenDoor()
 	{
-		if (_gameWon)
+		if (_gameEnd)
 			return;
 
 		if (_openTime > 0)
@@ -93,7 +97,7 @@ public class MusicPlayer : MonoBehaviour
 
 	IEnumerator OpenDoorCoroutine()
 	{
-		while(_openTime > 0 && _gameWon == false)
+		while(_openTime > 0 && _gameEnd == false)
 		{
 			_openTime -= Time.deltaTime;
 
@@ -117,10 +121,18 @@ public class MusicPlayer : MonoBehaviour
 
 	public void TransitionToVictory()
 	{
-		_gameWon = true;
+		_gameEnd = true;
 		_victory.TransitionTo(.5f);
 
 		_victorySource.Play();
 		_cheeringSource.Play();
+	}
+
+	public void TransitionToLose()
+	{
+		_gameEnd = true;
+		_victory.TransitionTo(.5f);
+
+		_loseSource.Play();
 	}
 }
