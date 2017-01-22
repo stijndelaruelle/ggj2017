@@ -14,6 +14,9 @@ public class FadeAudioVolume : MonoBehaviour
     [SerializeField]
     private float m_FadeTime = 0.0f;
     private float m_FadeTimer;
+
+    [SerializeField]
+    private float m_Delay = 0.0f;
     private float m_StartVolume;
 
     [SerializeField]
@@ -61,6 +64,11 @@ public class FadeAudioVolume : MonoBehaviour
     }
 
     public void StartFadeAudio()
+    {
+        Invoke("FadeAudio", m_Delay);
+    }
+
+    private void FadeAudio()
     {
         m_StartVolume = m_Source.volume;
         m_FadeTimer = m_FadeTime;
