@@ -397,15 +397,14 @@ public class Character : MonoBehaviour
     //Randomize
     protected void RandomizeFrequency()
     {
-        //Frequency is dependant on the width
-        //Big characters have a lower range than thin characters
-        switch (m_BodyType)
+        //Frequency is dependent on the gender
+        switch (m_Gender)
         {
-            case BodyType.Small:
+            case Gender.Male:
                 m_Frequency = UnityEngine.Random.Range(0.05f, 0.45f);
                 break;
 
-            case BodyType.Big:
+            case Gender.Female:
                 m_Frequency = UnityEngine.Random.Range(0.55f, 0.95f);
                 break;
 
@@ -413,14 +412,15 @@ public class Character : MonoBehaviour
                 break;
         }
 
-        //Amplitude is dependent on the gender
-        switch (m_Gender)
+        //Amplitude is dependant on the width
+        //Big characters have a lower range than thin characters
+        switch (m_BodyType)
         {
-            case Gender.Male:
+            case BodyType.Small:
                 m_Amplitude = UnityEngine.Random.Range(0.05f, 0.45f);
                 break;
 
-            case Gender.Female:
+            case BodyType.Big:
                 m_Amplitude = UnityEngine.Random.Range(0.55f, 0.95f);
                 break;
 
