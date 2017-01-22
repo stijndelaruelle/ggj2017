@@ -13,6 +13,12 @@ public class MusicPlayer : MonoBehaviour
 	private AudioMixerSnapshot _muffled;
 
 	[SerializeField]
+	private AudioMixerSnapshot _victory;
+
+	[SerializeField]
+	private AudioSource _victorySource;
+
+	[SerializeField]
 	private float _transitionDuration = .5f;
 
 	[SerializeField]
@@ -25,6 +31,8 @@ public class MusicPlayer : MonoBehaviour
 
 	#region Fields
 	private float _openTime = 0;
+
+	private bool _gameWon = false;
 	#endregion
 
 
@@ -59,6 +67,9 @@ public class MusicPlayer : MonoBehaviour
 
 	public void OpenDoor()
 	{
+		if (_gameWon)
+			return;
+
 		if (_openTime > 0)
 			_openTime += _openDoorDuration;
 		else
@@ -77,7 +88,7 @@ public class MusicPlayer : MonoBehaviour
 
 	IEnumerator OpenDoorCoroutine()
 	{
-		while(_openTime > 0)
+		while(_openTime > 0 && _gameWon == false)
 		{
 			_openTime -= Time.deltaTime;
 
@@ -97,5 +108,12 @@ public class MusicPlayer : MonoBehaviour
 	void TransitionToMuffled()
 	{
 		_muffled.TransitionTo(_transitionDuration * 2);
+	}
+
+	public void TransitionToVictory()
+	{
+		_gameWon = true;
+		_victory.TransitionTo(.5f);
+		_victorySource.Play();
 	}
 }
