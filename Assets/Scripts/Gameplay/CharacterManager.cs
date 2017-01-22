@@ -87,6 +87,8 @@ public class CharacterManager : MonoBehaviour
 
     private void OnCharacterDestroy(Character character)
     {
+		MusicPlayer.Instance.OpenDoor();
+
         character.DestroyEvent -= OnCharacterDestroy;
         m_Characters.Remove(character);
 

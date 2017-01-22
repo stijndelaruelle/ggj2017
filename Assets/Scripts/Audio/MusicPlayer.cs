@@ -14,7 +14,25 @@ public class MusicPlayer : MonoBehaviour
 
 	[SerializeField]
 	private float _transitionDuration = .5f;
+
+	[SerializeField]
+	private float _openDoorDuration = 5;
 	#endregion
+
+	#region Properties
+	public static MusicPlayer Instance;
+	#endregion
+
+	#region Fields
+	private float _openTime = 0;
+	#endregion
+
+
+	private void Awake()
+	{
+		if (Instance == null)
+			Instance = this;
+	}
 
 	// Use this for initialization
 	void Start ()
@@ -31,6 +49,40 @@ public class MusicPlayer : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.P))
 			TransitionToMuffled();
 	}
+
+	public void OpenDoor()
+	{
+		Debug.Log("Opening door.");
+
+		if (_openTime > 0)
+			_openTime += _openDoorDuration;
+		else
+		{
+			// Open Door.
+			TransitionToOriginal();
+
+			_openTime += _openDoorDuration;
+
+			// Start timer.
+			StartCoroutine(OpenDoorCoroutine());
+		}
+
+
+	}
+
+	IEnumerator OpenDoorCoroutine()
+	{
+		while(_openTime > 0)
+		{
+			_openTime -= Time.deltaTime;
+
+			yield return null;
+		}
+
+		// Close door.
+		TransitionToMuffled();
+	}
+
 
 	void TransitionToOriginal()
 	{
