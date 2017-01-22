@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class SwitchAudioTrack : MonoBehaviour
 {
-
     [SerializeField]
     AudioSource source;
     [SerializeField]
     AudioClip clip;
+
+    [SerializeField]
+    private float m_Delay = 0.0f;
 
     [SerializeField]
     private ControllerButtonCode m_ButtonCode;
@@ -49,6 +51,13 @@ public class SwitchAudioTrack : MonoBehaviour
 
     public void ChangeAudio()
     {
+        StartCoroutine(ChangeAudioRoutine());
+    }
+
+    private IEnumerator ChangeAudioRoutine()
+    {
+        yield return new WaitForSeconds(m_Delay);
+
         float time = source.time;
         source.clip = clip;
         source.Play();
