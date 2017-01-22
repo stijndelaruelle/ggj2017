@@ -43,12 +43,12 @@ public class MoveCameraTo : MonoBehaviour
         }
     }
 
-    void OnMouseUp()
-    {
-        MoveCamera();
-    }
+    //void OnMouseUp()
+    //{
+    //    MoveCamera();
+    //}
 
-    private void MoveCamera()
+    public void MoveCamera()
     {
         iTween.MoveTo(Camera.main.gameObject, iTween.Hash("y", target.transform.position.y, "x", target.transform.position.x, "easetype", "easeInOutQuad", "time", 0.5f));
     }

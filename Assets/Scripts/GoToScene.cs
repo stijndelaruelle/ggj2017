@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OnClickGoToScene : MonoBehaviour {
-
+public class GoToScene : MonoBehaviour
+{
     [SerializeField] string scene;
     [SerializeField] bool transition;
     string sceneToLoad;
@@ -51,23 +51,30 @@ public class OnClickGoToScene : MonoBehaviour {
 
         if (controllerSubmit || keyboardSubmit)
         {
-            OnMouseUp();
+            ChangeScene();
         }
     }
 
-    void OnMouseDown() {
-        iTween.Stop();
-        transform.position+=new Vector3(0,-0.2f,0);
-    }
+    //void OnMouseDown() {
+    //    iTween.Stop();
+    //    transform.position+=new Vector3(0,-0.2f,0);
+    //}
 
-    void OnMouseUp() {
-        if(transition) {
+    public void ChangeScene()
+    {
+        if (transition)
+        {
             Camera.main.gameObject.GetComponent<TransitionScript>().MoveCamera();
-            Invoke("ChangeScene", 0.5f);
-        }else ChangeScene(); 
+            Invoke("ActuallyChangeScene", 0.5f);
+        }
+        else
+        {
+            ActuallyChangeScene();
+        }
     }
 
-    void ChangeScene() {
+    private void ActuallyChangeScene()
+    {
         SceneManager.LoadScene(scene);
     }
 }
