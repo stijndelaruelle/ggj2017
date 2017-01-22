@@ -226,8 +226,14 @@ public class Queue : MonoBehaviour
 
         m_Characters[0].BuyTicket(m_EndPosition.position);
 
-        //The player is buying a ticket, he wins!
-        if (m_Characters[0] == m_Player)
+		// Play ticket sold sound.
+		if (SoundPlayer.Instance != null)
+			SoundPlayer.Instance.TicketSold.Play();
+		else
+			Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
+
+		//The player is buying a ticket, he wins!
+		if (m_Characters[0] == m_Player)
         {
             Invoke("GameWin", 2f);
             Debug.Log("PLAYER WINS");
