@@ -89,7 +89,20 @@ public class Character : MonoBehaviour
     private bool m_WasOnScreen = false;
 
     private float m_OriginalScale = 1.0f;
+
     protected bool m_IsCheering = false;
+    public bool IsCheering
+    {
+        get { return m_IsCheering; }
+        set { m_IsCheering = value; }
+    }
+
+    protected bool m_IsSad = false;
+    public virtual bool IsSad
+    {
+        get { return m_IsSad; }
+        set { m_IsSad = value; }
+    }
 
     //Events
     private Action<Character> m_RunAwayEvent;
@@ -208,6 +221,14 @@ public class Character : MonoBehaviour
             return;
         }
 
+        if (m_IsSad == true)
+        {
+            if (m_SkeletonAnimation.AnimationName != "sad")
+                m_SkeletonAnimation.AnimationName = "sad";
+
+            return;
+        }
+
         if (m_SkeletonAnimation.AnimationName == null || m_SkeletonAnimation.AnimationName != "idle")
         {
             m_SkeletonAnimation.AnimationName = "idle";
@@ -278,7 +299,9 @@ public class Character : MonoBehaviour
 
     protected IEnumerator MoveToPositionSequentiallyRoutine(Vector3 position)
     {
-        //Jump in the air
+        //Get out of the queue (if we were in any)
+        if (m_RunAwayEvent != null)
+            m_RunAwayEvent(this);
 
         //Move to the correct Y position
         Vector3 newPosition = new Vector3(transform.position.x, position.y, transform.position.z);
@@ -289,12 +312,6 @@ public class Character : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
-        //Look left & right
-
-        //Get out of the queue (if we were in any)
-        if (m_RunAwayEvent != null)
-            m_RunAwayEvent(this);
-
         //Run towards where we came from
         newPosition = position;
 
@@ -304,7 +321,7 @@ public class Character : MonoBehaviour
     }
 
     //Buying feedback
-    public void BuyTicket(Vector3 position)
+    public virtual void BuyTicket(Vector3 position)
     {
         StartCoroutine(BuyTicketRoutine(position));
     }
@@ -370,6 +387,11 @@ public class Character : MonoBehaviour
     {
         if (m_NegativeBrainCommandEvent != null)
             m_NegativeBrainCommandEvent();
+    }
+
+    public void Leave()
+    {
+        ExecuteNegativeCommand();
     }
 
     //Randomize

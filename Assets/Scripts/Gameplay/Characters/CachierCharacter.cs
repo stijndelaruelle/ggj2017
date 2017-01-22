@@ -98,6 +98,11 @@ public class CachierCharacter : Character
         m_SellTimer = m_MaxSellTime; //UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
     }
 
+    public void SetSellTimer(float value)
+    {
+        m_SellTimer = value;
+    }
+
     private void FireChangeTicketEvent()
     {
         if (m_ChangeTicketEvent != null)
@@ -108,6 +113,15 @@ public class CachierCharacter : Character
     {
         base.ExecuteNegativeCommand();
         StartCoroutine(MoveAndComeBackRoutine(m_SpawnPosition));
+    }
+
+    public void Leave()
+    {
+        m_IsGone = true;
+
+        //Move to the correct Y position
+        Vector3 oldPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        MoveToPosition(m_SpawnPosition);
     }
 
     private IEnumerator ComeBackRoutine(Vector3 position)

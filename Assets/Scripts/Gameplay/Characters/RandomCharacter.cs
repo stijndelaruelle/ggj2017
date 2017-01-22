@@ -53,7 +53,15 @@ public class RandomCharacter : Character
         }
     }
 
-    private bool m_IsSad;
+    public override bool IsSad
+    {
+        get { return m_IsSad; }
+        set
+        {
+            m_IsSad = value;
+            AllowCalling = false;
+        }
+    }
 
     //Events
     private Action m_StartCallingEvent;

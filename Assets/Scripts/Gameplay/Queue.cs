@@ -40,8 +40,10 @@ public class Queue : MonoBehaviour
 
     private List<Character> m_Characters;
     private List<RandomCharacter> m_RandomCharacters;
+    private bool m_GameEnd = false;
 
-	public static Queue Instance; 
+    private Coroutine m_RemoveMovementSequentaillyRoutine;
+    public static Queue Instance; 
     private void Awake()
     {
 		if (Instance == null)
@@ -138,6 +140,11 @@ public class Queue : MonoBehaviour
                 Vector3 targetPosition = m_Characters[i].GamePosition;
                 targetPosition.x -= character.Width;
 
+                if (i < (m_Characters.Count - 1))
+                {
+                    targetPosition = m_Characters[i + 1].GamePosition;
+                }
+
                 m_Characters[i].MoveToPosition(targetPosition);
             }
 
@@ -150,6 +157,9 @@ public class Queue : MonoBehaviour
 
     private void Remove(Character character)
     {
+        if (character == m_Player)
+            return;
+
         int index = m_Characters.IndexOf(character);
 
         if (index != -1)
@@ -182,9 +192,11 @@ public class Queue : MonoBehaviour
         oldCharacter.RunAwayEvent -= OnCharacterRunAway;
 
         //All characters behind this character move forward with the width
-        m_Characters.RemoveAt(position);
+        if (m_RemoveMovementSequentaillyRoutine != null)
+            StopCoroutine(m_RemoveMovementSequentaillyRoutine);
 
-        StartCoroutine(RemoveMovementSequentailly(position, oldCharacter));
+        m_Characters.RemoveAt(position);
+        m_RemoveMovementSequentaillyRoutine = StartCoroutine(RemoveMovementSequentailly(position, oldCharacter));
     }
 
     private void OnCharacterRunAway(Character character)
@@ -200,42 +212,63 @@ public class Queue : MonoBehaviour
         //The player is buying a ticket, he wins!
         if (m_Characters[0] == m_Player)
         {
-            Invoke("GameWin", 2f);
-            Debug.Log("PLAYER WINS");
+            m_Cachier.SetSellTimer(1.0f);
         }
     }
 
     private void OnSellTicket(int ticketsLeft)
     {
-        
-        //If this was the last ticket, the player loses
-        if (ticketsLeft == 0)
-        {
-            Debug.Log("PLAYER LOSES");
-            GameoverLoss.SetActive(true);
-			MusicPlayer.Instance.TransitionToLose();
-			return;
-        }
+        if (m_GameEnd)
+            return;
+
+        if (m_Characters == null || m_Characters.Count == 0)
+            return;
+
+        m_Characters[0].BuyTicket(m_EndPosition.position);
+
         //The player is buying a ticket, he wins!
         if (m_Characters[0] == m_Player)
         {
             Invoke("GameWin", 2f);
             Debug.Log("PLAYER WINS");
 			MusicPlayer.Instance.TransitionToVictory();
-			return;
+            m_GameEnd = true;
+            return;
         }
 
+        //If this was the last ticket, the player loses
+        if (ticketsLeft == 0)
+        {
+            //All players become sad until the scene resets
+            for (int i = 1; i < m_Characters.Count; ++i)
+            {
+                m_Characters[i].IsSad = true;
+            }
 
-        if (m_Characters == null || m_Characters.Count == 0)
+            //The cachier leaves
+            m_Cachier.Leave();
+
+            Invoke("GameLose", 1f);
+            Debug.Log("PLAYER LOSES");
+            MusicPlayer.Instance.TransitionToLose();
+            m_GameEnd = true;
             return;
-
-        m_Characters[0].BuyTicket(m_EndPosition.position);
-        //m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
+        }
     }
 
     private void GameWin()
     {
         GameoverWin.SetActive(true);
+    }
+
+    private void GameLose()
+    {
+        GameoverLoss.SetActive(true);
+
+        for (int i = 1; i < m_Characters.Count; ++i)
+        {
+            m_Characters[i].Leave();
+        }
     }
 
     //Calling events
@@ -272,13 +305,23 @@ public class Queue : MonoBehaviour
     //Sequential movement (looks nicer)
     private IEnumerator RemoveMovementSequentailly(int position, Character oldCharacter)
     {
-        //All characters have to move forwards (with the width of the old character)
+        //All characters have to move forwards
+        List<Vector3> targetPositions = new List<Vector3>();
+
+        for (int i = m_Characters.Count - 1; i >= position; --i)
+        {
+            Vector3 targetPosition = oldCharacter.GamePosition;
+            if (i > 0)
+            {
+                targetPosition = m_Characters[i - 1].GamePosition;
+            }
+
+            targetPositions.Add(targetPosition);
+        }
+
         for (int i = position; i < m_Characters.Count; ++i)
         {
-            Vector3 targetPosition = m_Characters[i].GamePosition;
-            targetPosition.x += oldCharacter.Width;
-
-            m_Characters[i].MoveToPosition(targetPosition);
+            m_Characters[i].MoveToPosition(targetPositions[targetPositions.Count - i - 1]);
 
             float randTime = UnityEngine.Random.Range(0.1f, 0.5f);
             yield return new WaitForSeconds(randTime);
