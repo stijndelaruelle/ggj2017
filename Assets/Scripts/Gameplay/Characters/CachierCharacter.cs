@@ -9,18 +9,14 @@ public class CachierCharacter : Character
     [Space(5)]
 
     [SerializeField]
-    private float m_MinSellTime;
+    private DifficultyModeDefinition m_EasyGameMode;
 
     [SerializeField]
-    private float m_MaxSellTime;
+    private DifficultyModeDefinition m_HardGameMode;
+    private DifficultyModeDefinition m_CurrentGameMode;
+
     private float m_SellTimer;
-
-    [SerializeField]
-    private int m_Tickets = 20;
     private int m_TicketsLeft = 1;
-
-    [SerializeField]
-    private float m_TimeGoneAfterHacked = 2;
     private bool m_IsGone = false;
 
     [SerializeField]
@@ -46,7 +42,13 @@ public class CachierCharacter : Character
 
     private void Start()
     {
-        m_TicketsLeft = m_Tickets;
+        m_CurrentGameMode = m_EasyGameMode;
+        if (PlayerPrefs.GetInt("DifficultyMode") > 0)
+        {
+            m_CurrentGameMode = m_HardGameMode;
+        }
+
+        m_TicketsLeft = m_CurrentGameMode.Tickets;
         FireChangeTicketEvent();
 
         RandomizeFrequency();
@@ -63,7 +65,7 @@ public class CachierCharacter : Character
 
     private void UpdateSelling()
     {
-        if (m_IsGone || m_Tickets <= 0)
+        if (m_IsGone || m_TicketsLeft <= 0)
             return;
 
         m_SellTimer -= Time.deltaTime;
@@ -74,9 +76,12 @@ public class CachierCharacter : Character
             ResetSellTimer();
         }
     }
-    public float GetNormalizedSellTimer() {
-        return m_SellTimer/m_MaxSellTime;
+
+    public float GetNormalizedSellTimer()
+    {
+        return (m_SellTimer / m_CurrentGameMode.SellTime);
     }
+
     private void SellTicket()
     {
         if (m_TicketsLeft <= 0)
@@ -95,7 +100,7 @@ public class CachierCharacter : Character
 
     public void ResetSellTimer()
     {
-        m_SellTimer = m_MaxSellTime; //UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
+        m_SellTimer = m_CurrentGameMode.SellTime; //UnityEngine.Random.Range(m_MinSellTime, m_MaxSellTime);
     }
 
     public void SetSellTimer(float value)
@@ -106,7 +111,7 @@ public class CachierCharacter : Character
     private void FireChangeTicketEvent()
     {
         if (m_ChangeTicketEvent != null)
-            m_ChangeTicketEvent(m_TicketsLeft, m_Tickets);
+            m_ChangeTicketEvent(m_TicketsLeft, m_CurrentGameMode.Tickets);
     }
 
     protected override void ExecuteNegativeCommand()
@@ -155,7 +160,7 @@ public class CachierCharacter : Character
             yield return new WaitForEndOfFrame();
         }
 
-        yield return new WaitForSeconds(m_TimeGoneAfterHacked);
+        yield return new WaitForSeconds(m_CurrentGameMode.TimeGoneAfterHacked);
 
         MoveToPosition(oldPosition);
 
