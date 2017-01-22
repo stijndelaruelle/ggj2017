@@ -28,9 +28,12 @@ public class FlickerSprite : MonoBehaviour {
     }
 
     void Update() {
+        if(LinkedSprite) return;
         flickerTimer-=Time.deltaTime;
 
         if(flickerTimer<=0) {
+            flickerTimer = Random.Range(FlickerIntervalMin, FlickerIntervalMax);
+            Flicker();
             foreach(FlickerSprite flsp in LinkedFlickers) {
                 flsp.Flicker();
             }
@@ -38,7 +41,6 @@ public class FlickerSprite : MonoBehaviour {
     }
 
     void Flicker() {
-        flickerTimer = Random.Range(FlickerIntervalMin, FlickerIntervalMax);
         spRen.sprite = SpriteB;
         Invoke("RestoreInitialSprite", FlickerTime);
     }
