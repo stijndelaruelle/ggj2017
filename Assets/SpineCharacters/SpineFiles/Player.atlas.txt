@@ -6,21 +6,21 @@ filter: Linear,Linear
 repeat: none
 Mouth open
   rotate: false
-  xy: 437, 232
+  xy: 324, 181
   size: 39, 22
   orig: 39, 22
   offset: 0, 0
   index: -1
 Mouth sad
-  rotate: false
-  xy: 277, 175
+  rotate: true
+  xy: 488, 209
   size: 45, 22
   orig: 45, 22
   offset: 0, 0
   index: -1
 Mouth smile
   rotate: false
-  xy: 277, 120
+  xy: 151, 107
   size: 39, 21
   orig: 39, 21
   offset: 0, 0
@@ -48,64 +48,71 @@ Player/head
   index: -1
 Player/left arm
   rotate: false
-  xy: 277, 199
+  xy: 365, 199
   size: 61, 55
   orig: 61, 55
   offset: 0, 0
   index: -1
 Player/left hand
   rotate: false
-  xy: 151, 117
+  xy: 277, 205
   size: 86, 49
   orig: 86, 49
   offset: 0, 0
   index: -1
 Player/left leg
-  rotate: true
-  xy: 478, 232
+  rotate: false
+  xy: 401, 165
   size: 22, 32
   orig: 22, 32
   offset: 0, 0
   index: -1
 Player/left shoe
   rotate: false
-  xy: 400, 225
+  xy: 192, 99
   size: 35, 29
   orig: 35, 29
   offset: 0, 0
   index: -1
 Player/neck
   rotate: false
-  xy: 170, 85
+  xy: 229, 98
   size: 29, 30
   orig: 29, 30
   offset: 0, 0
   index: -1
 Player/right arm
-  rotate: false
-  xy: 239, 121
+  rotate: true
+  xy: 277, 167
   size: 36, 45
   orig: 36, 45
   offset: 0, 0
   index: -1
 Player/right hand
   rotate: false
-  xy: 340, 215
+  xy: 428, 215
   size: 58, 39
   orig: 58, 39
   offset: 0, 0
   index: -1
 Player/right leg
-  rotate: false
-  xy: 170, 52
+  rotate: true
+  xy: 428, 191
   size: 22, 31
   orig: 22, 31
   offset: 0, 0
   index: -1
 Player/right shoe
   rotate: false
-  xy: 277, 143
+  xy: 365, 167
   size: 34, 30
   orig: 34, 30
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 151, 130
+  size: 104, 36
+  orig: 104, 36
   offset: 0, 0
   index: -1
