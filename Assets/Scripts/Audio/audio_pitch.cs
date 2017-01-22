@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class audio_pitch : MonoBehaviour {
 
 
@@ -17,7 +18,8 @@ public class audio_pitch : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		pitch = 1.0f;
-		audio_test = (AudioSource)gameObject.AddComponent <AudioSource>();
+		//audio_test = (AudioSource)gameObject.AddComponent <AudioSource>();
+		audio_test = GetComponent<AudioSource>();
 		AudioArray_audio = Resources.LoadAll("Audio",typeof(AudioClip));
 		audio_test.clip = AudioArray_audio[0] as AudioClip;
 		audio_test.loop = true;

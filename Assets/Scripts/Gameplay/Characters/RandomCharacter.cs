@@ -53,6 +53,8 @@ public class RandomCharacter : Character
         }
     }
 
+    private bool m_IsSad;
+
     //Events
     private Action m_StartCallingEvent;
     public Action StartCallingEvent
@@ -105,6 +107,22 @@ public class RandomCharacter : Character
             return;
         }
 
+        if (m_IsCheering == true)
+        {
+            if (m_SkeletonAnimation.AnimationName != "cheer")
+                m_SkeletonAnimation.AnimationName = "cheer";
+
+            return;
+        }
+
+        if (m_IsSad == true)
+        {
+            if (m_SkeletonAnimation.AnimationName != "sad")
+                m_SkeletonAnimation.AnimationName = "sad";
+
+            return;
+        }
+
         if (m_IsCalling == true)
         {
             if (m_SkeletonAnimation.AnimationName != "phonecall")
@@ -131,6 +149,11 @@ public class RandomCharacter : Character
         {
             m_IsCalling = true;
             m_CallTimer = UnityEngine.Random.Range(m_MinCallTimer, m_MaxCallTimer);
+
+            if (m_Gender == Gender.Female)
+            {
+                m_CallTimer *= 1.2f;
+            }
 
             //Make sure noboy else start's calling
             if (m_StartCallingEvent != null)
@@ -168,6 +191,11 @@ public class RandomCharacter : Character
     private void ResetWaitToCallTimer()
     {
         m_WaitToCallTimer = UnityEngine.Random.Range(m_MinWaitToCallTimer, m_MaxWaitToCallTimer);
+
+        if (m_Gender == Gender.Male)
+        {
+            m_WaitToCallTimer *= 1.2f;
+        }
     }
 
     public override void MoveToPositionSequentially(Vector3 position)
@@ -179,9 +207,18 @@ public class RandomCharacter : Character
     protected override void ExecuteNegativeCommand()
     {
         base.ExecuteNegativeCommand();
+        StartCoroutine(NegativeBehaviourCommand());
+    }
+
+    private IEnumerator NegativeBehaviourCommand()
+    {
+        m_IsSad = true;
+        yield return new WaitForSeconds(0.5f);
+        m_IsSad = false;
+
         CancelCalling();
 
-        m_MoveSpeed *= 3.0f;
+        m_MoveSpeed *= 5.0f;
         StartCoroutine(MoveToPositionSequentiallyRoutine(m_SpawnPosition));
     }
 
@@ -203,6 +240,10 @@ public class RandomCharacter : Character
         //Visual width
         CharacterStatistics stats = m_SkeletonAnimation.GetComponent<CharacterStatistics>();
         if (stats != null) { m_Width = stats.Width; }
+
+        //Random animation speed
+        float rand = UnityEngine.Random.Range(0.5f, 1.5f);
+        m_SkeletonAnimation.timeScale = rand;
 
         RandomizeFrequency();
     }

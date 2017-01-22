@@ -40,8 +40,15 @@ public class Queue : MonoBehaviour
 
     private List<Character> m_Characters;
     private List<RandomCharacter> m_RandomCharacters;
+
+	public static Queue Instance; 
     private void Awake()
     {
+		if (Instance == null)
+			Instance = this;
+		else
+			Debug.LogWarning("Multiple instance of queue in this scene!");
+
         //Subscribe to the cachier events
         m_Cachier.SellTicketEvent += OnSellTicket;
     }
@@ -220,11 +227,8 @@ public class Queue : MonoBehaviour
         if (m_Characters == null || m_Characters.Count == 0)
             return;
 
-        m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
-
-        //if (m_Characters.Count < 1)
-         //   return;
-
+        m_Characters[0].BuyTicket(m_EndPosition.position);
+        //m_Characters[0].MoveToPositionSequentially(m_EndPosition.position);
     }
 
     private void GameWin()
@@ -309,4 +313,9 @@ public class Queue : MonoBehaviour
         Insert(index + 1, friendCharacter);
         m_RandomCharacters.Add(friendCharacter);
     }
+
+	public bool ContainsCharacter(Character character)
+	{
+		return m_Characters.Contains(character);
+	}
 }
