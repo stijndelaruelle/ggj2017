@@ -199,6 +199,22 @@ namespace Sjabloon
             m_AxisInputCommands.Add(name, new AxisInputCommand(controllerIndex, KeyCode.None, KeyCode.None, axisCode, ControllerButtonCode.None, ControllerButtonCode.None));
         }
 
+        public void UnbindButton(string name)
+        {
+            if (m_ButtonInputCommands.ContainsKey(name))
+            {
+                m_ButtonInputCommands.Remove(name);
+            }
+        }
+
+        public void UnbindAxis(string name)
+        {
+            if (m_AxisInputCommands.ContainsKey(name))
+            {
+                m_AxisInputCommands.Remove(name);
+            }
+        }
+
         public bool GetButton(string name)
         {
             if (m_ButtonInputCommands.ContainsKey(name))

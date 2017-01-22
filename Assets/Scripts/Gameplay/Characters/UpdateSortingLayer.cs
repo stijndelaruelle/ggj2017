@@ -20,7 +20,7 @@ public class UpdateSortingLayer : MonoBehaviour
     {
         if (m_Offset> 0)
         {
-            Debug.Log("");
+            //Debug.Log("");
         }
         m_Renderer.sortingOrder = (int)(transform.position.y * 100 * -1) + m_Offset;
     }
