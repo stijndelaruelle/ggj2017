@@ -15,9 +15,14 @@ public class MusicPlayer : MonoBehaviour
 	[SerializeField]
 	private AudioMixerSnapshot _victory;
 
+	[Space]
 	[SerializeField]
 	private AudioSource _victorySource;
 
+	[SerializeField]
+	private AudioSource _cheeringSource;
+
+	[Space]
 	[SerializeField]
 	private float _transitionDuration = .5f;
 
@@ -114,6 +119,8 @@ public class MusicPlayer : MonoBehaviour
 	{
 		_gameWon = true;
 		_victory.TransitionTo(.5f);
+
 		_victorySource.Play();
+		_cheeringSource.Play();
 	}
 }
