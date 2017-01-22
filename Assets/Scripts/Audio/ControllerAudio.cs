@@ -30,7 +30,8 @@ public class ControllerAudio : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		SetPitch();
+		//SetPitch();
+		SetVolume();
 	}
 
 	private void OnDisable()
@@ -44,6 +45,11 @@ public class ControllerAudio : MonoBehaviour
 	{
 		//Debug.Log(_brainWaveDevice.MinimalDifference);
 		_audioPitch.pitch = 50 * (.25f - _brainWaveDevice.MinimalDifference);
+	}
+
+	void SetVolume()
+	{
+		_audioSource.volume = (.5f - _brainWaveDevice.MinimalDifference) * 2;
 	}
 
 	void PlayTune()
