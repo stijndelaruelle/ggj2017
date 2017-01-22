@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwitchAudioTrack : MonoBehaviour {
+public class SwitchAudioTrack : MonoBehaviour
+{
 
-    [SerializeField] AudioSource source;
-    [SerializeField] AudioClip clip;
+    [SerializeField]
+    AudioSource source;
+    [SerializeField]
+    AudioClip clip;
 
     [SerializeField]
     private ControllerButtonCode m_ButtonCode;
