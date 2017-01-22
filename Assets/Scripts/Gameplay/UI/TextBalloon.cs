@@ -20,6 +20,10 @@ public class TextBalloon : MonoBehaviour
 
 	private Tweet m_CharacterTweet;
     private bool m_IsHacking = false;
+    private float m_ScrambleTimer;
+
+    [SerializeField]
+    private float m_ScrambleFrequency;
 
     private void Awake()
     {
@@ -84,6 +88,9 @@ public class TextBalloon : MonoBehaviour
                 m_TextBalloonDecativateTimer = 0.0f;
             }
         }
+
+        //SCramble
+        m_ScrambleTimer -= Time.deltaTime;
     }
 
 
@@ -96,6 +103,12 @@ public class TextBalloon : MonoBehaviour
 
 		if(m_CharacterTweet == null)
 			m_CharacterTweet = Twitter.Instance.GetRandomHashTag().GetRandomTweet();
+
+        if (m_ScrambleTimer < 0.0f)
+        {
+            m_CharacterTweet.Scramble();
+            m_ScrambleTimer = m_ScrambleFrequency;
+        }
 
         m_Text.text = m_CharacterTweet.ScrambledContents;
 
