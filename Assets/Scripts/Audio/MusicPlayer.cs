@@ -58,11 +58,11 @@ public class MusicPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Input.GetKeyUp(KeyCode.O))
-			TransitionToOriginal();
+		//if (Input.GetKeyUp(KeyCode.O))
+		//	TransitionToOriginal();
 
-		if (Input.GetKeyUp(KeyCode.P))
-			TransitionToMuffled();
+		//if (Input.GetKeyUp(KeyCode.P))
+		//	TransitionToMuffled();
 	}
 
 	private void OnDisable()
