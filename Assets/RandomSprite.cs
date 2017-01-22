@@ -8,6 +8,6 @@ public class RandomSprite : MonoBehaviour {
     [SerializeField] List<Sprite> SpriteList = new List<Sprite>();
 
     void Start() {
-        GetComponent<SpriteRenderer>().sprite = SpriteList[Random.Range(0,SpriteList.Count-1)];
+        GetComponent<SpriteRenderer>().sprite = SpriteList[Random.Range(0,SpriteList.Count)];
     }
 }
