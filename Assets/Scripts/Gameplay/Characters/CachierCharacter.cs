@@ -49,6 +49,8 @@ public class CachierCharacter : Character
         m_TicketsLeft = m_Tickets;
         FireChangeTicketEvent();
 
+        RandomizeFrequency();
+
         StartCoroutine(ComeBackRoutine(m_StandPosition.position));
     }
 
@@ -77,6 +79,9 @@ public class CachierCharacter : Character
     }
     private void SellTicket()
     {
+        if (m_TicketsLeft <= 0)
+            return;
+
         m_TicketsLeft -= 1;
 
         if (m_SellTicketEvent != null)
