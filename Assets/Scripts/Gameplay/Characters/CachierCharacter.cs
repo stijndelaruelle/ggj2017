@@ -72,7 +72,9 @@ public class CachierCharacter : Character
             ResetSellTimer();
         }
     }
-
+    public float GetNormalizedSellTimer() {
+        return m_SellTimer/m_MaxSellTime;
+    }
     private void SellTicket()
     {
         m_TicketsLeft -= 1;
