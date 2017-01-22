@@ -127,12 +127,23 @@ public class TextBalloon : MonoBehaviour
 
     private void OnFullHacked()
     {
-        m_IsHacking = true;
+
+
+		m_IsHacking = true;
 
         if (m_Text == null)
             return;
 
-        m_Text.text = m_CharacterTweet.Contents;
+		if (m_Text.text != m_CharacterTweet.Contents)
+		{
+			// Play hacked sound.
+			if (SoundPlayer.Instance != null)
+				SoundPlayer.Instance.HalfHacked.Play();
+			else
+				Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
+		}
+
+		m_Text.text = m_CharacterTweet.Contents;
 
         if (m_TextBalloonActivateTimer == 0.0f)
             m_TextBalloonActivateTimer = m_TextBalloonActivateTime;

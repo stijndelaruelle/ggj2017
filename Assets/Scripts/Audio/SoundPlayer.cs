@@ -5,9 +5,13 @@ using UnityEngine;
 public class SoundPlayer : MonoBehaviour
 {
 	#region Inspector Fields
-	public AudioSource Hacked;
+	public AudioSource HalfHacked;
+	public AudioSource FullyHacked;
 
 	public AudioSource TicketSold;
+
+	public AudioSource OpenDoor;
+	public AudioSource CloseDoor;
 	#endregion
 
 	#region Properties

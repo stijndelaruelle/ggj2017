@@ -310,7 +310,7 @@ public class BrainwaveDevice : MonoBehaviour
 
 			// Play hacked sound.
 			if (SoundPlayer.Instance != null)
-				SoundPlayer.Instance.Hacked.Play();
+				SoundPlayer.Instance.FullyHacked.Play();
 			else
 				Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
 		}
