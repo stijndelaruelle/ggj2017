@@ -82,6 +82,12 @@ public class MusicPlayer : MonoBehaviour
 		if (_gameEnd)
 			return;
 
+		// Play open door sound.
+		if (SoundPlayer.Instance != null)
+			SoundPlayer.Instance.OpenDoor.Play();
+		else
+			Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
+
 		if (_openTime > 0)
 			_openTime += _openDoorDuration;
 		else
@@ -109,6 +115,12 @@ public class MusicPlayer : MonoBehaviour
 
 		// Close door.
 		TransitionToMuffled();
+
+		// Play close door sound.
+		if (SoundPlayer.Instance != null)
+			SoundPlayer.Instance.CloseDoor.Play();
+		else
+			Debug.LogWarning("No sound player found, please place it in the scene to get sound.");
 	}
 
 
