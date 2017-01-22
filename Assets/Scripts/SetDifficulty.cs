@@ -20,8 +20,8 @@ public class SetDifficulty : MonoBehaviour
     {
         m_InputManager = InputManager.Instance;
 
-        m_InputManager.BindButton("Controller_SetDifficulty_" + m_DifficultyMode, 0, m_ButtonCode, InputManager.ButtonState.Pressed);
-        m_InputManager.BindButton("Keyboard_SetDifficulty_" + m_DifficultyMode, m_KeyCode, InputManager.ButtonState.Pressed);
+        m_InputManager.BindButton("Controller_SetDifficulty_" + m_DifficultyMode, 0, m_ButtonCode, InputManager.ButtonState.OnPress);
+        m_InputManager.BindButton("Keyboard_SetDifficulty_" + m_DifficultyMode, m_KeyCode, InputManager.ButtonState.OnPress);
     }
 
     private void OnDestroy()

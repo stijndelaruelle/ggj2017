@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class MoveCameraTo : MonoBehaviour
 {
-	[SerializeField] GameObject target;
+    [SerializeField] GameObject root;
+    [SerializeField] GameObject target;
 
     [SerializeField]
     private ControllerButtonCode m_ButtonCode;
@@ -19,8 +20,8 @@ public class MoveCameraTo : MonoBehaviour
     {
         m_InputManager = InputManager.Instance;
 
-        m_InputManager.BindButton("Controller_MoveCamera_" + target.name, 0, m_ButtonCode, InputManager.ButtonState.Pressed);
-        m_InputManager.BindButton("Keyboard_MoveCamera_" + target.name, m_KeyCode, InputManager.ButtonState.Pressed);
+        m_InputManager.BindButton("Controller_MoveCamera_" + target.name, 0, m_ButtonCode, InputManager.ButtonState.OnPress);
+        m_InputManager.BindButton("Keyboard_MoveCamera_" + target.name, m_KeyCode, InputManager.ButtonState.OnPress);
     }
 
     private void OnDestroy()
@@ -34,6 +35,9 @@ public class MoveCameraTo : MonoBehaviour
 
     private void Update()
     {
+        if (!root.activeInHierarchy)
+            return;
+
         bool controller = m_InputManager.GetButton("Controller_MoveCamera_" + target.name);
         bool keyboard = m_InputManager.GetButton("Keyboard_MoveCamera_" + target.name);
 
@@ -50,6 +54,17 @@ public class MoveCameraTo : MonoBehaviour
 
     public void MoveCamera()
     {
+        StartCoroutine(ModeCameraRoutine());
+    }
+
+    private IEnumerator ModeCameraRoutine()
+    {
+        target.SetActive(true);
+        m_InputManager.DisableInput = true;
         iTween.MoveTo(Camera.main.gameObject, iTween.Hash("y", target.transform.position.y, "x", target.transform.position.x, "easetype", "easeInOutQuad", "time", 0.5f));
+
+        yield return new WaitForSeconds(0.5f);
+        m_InputManager.DisableInput = false;
+        root.SetActive(false);
     }
 }
