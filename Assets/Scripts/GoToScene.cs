@@ -7,8 +7,10 @@ using UnityEngine.SceneManagement;
 public class GoToScene : MonoBehaviour
 {
     [SerializeField] string scene;
-    [SerializeField] bool transition;
     string sceneToLoad;
+
+    [SerializeField]
+    private float m_Delay = 0.0f;
 
     [SerializeField]
     private ControllerButtonCode m_ButtonCode;
@@ -62,19 +64,16 @@ public class GoToScene : MonoBehaviour
 
     public void ChangeScene()
     {
-        if (transition)
-        {
-            Camera.main.gameObject.GetComponent<TransitionScript>().MoveCamera();
-            Invoke("ActuallyChangeScene", 0.5f);
-        }
-        else
-        {
-            ActuallyChangeScene();
-        }
+        StartCoroutine(ChangeSceneRoutine());
     }
 
-    private void ActuallyChangeScene()
+    private IEnumerator ChangeSceneRoutine()
     {
+        yield return new WaitForSeconds(m_Delay);
+
+        Camera.main.gameObject.GetComponent<TransitionScript>().MoveCamera();
+        yield return new WaitForSeconds(0.5f);
+
         SceneManager.LoadScene(scene);
     }
 }
