@@ -134,6 +134,9 @@ public class TextBalloon : MonoBehaviour
         if (m_Text == null)
             return;
 
+        if (m_CharacterTweet == null)
+            return;
+
 		if (m_Text.text != m_CharacterTweet.Contents)
 		{
 			// Play hacked sound.
