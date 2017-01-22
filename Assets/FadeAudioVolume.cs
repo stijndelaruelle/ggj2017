@@ -72,5 +72,10 @@ public class FadeAudioVolume : MonoBehaviour
     {
         m_StartVolume = m_Source.volume;
         m_FadeTimer = m_FadeTime;
+
+        if (m_FadeTimer == 0.0f)
+        {
+            m_Source.volume = m_TargetVolume;
+        }
     }
 }
